@@ -1,0 +1,19 @@
+{
+  "name": "abdarbot",
+  "version": "1.0.0",
+  "description": "A bot used for bookkeeping in ALC",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ComradeDanni",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/rest": "^1.0.1",
+    "customizable-discordjs-pagination": "^2.0.1",
+    "discord.js": "^14.1.2",
+    "discordjs-button-embed-pagination": "^4.0.3",
+    "discordjs-button-pagination": "^1.0.7",
+    "mongoose": "^6.5.1"
+  }
+}
