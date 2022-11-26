@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, Routes } = require('discord.js');
 const { REST } = require('@discordjs/rest');
-const { clientId, guildId, token } = require('./config.json');
+const { clientIdlive, guildIdlive, token } = require('./config.json');
 const { EmbedBuilder } = require('discord.js');
 
 
@@ -81,12 +81,6 @@ const commands = [
 	.setDescription('Gives information on a given character of a player')
 	.addStringOption(option => option.setName('character').setDescription('Character Name').setMinLength(1).setMaxLength(30).setRequired(true)),
 
-	new SlashCommandBuilder().setName('renamecharacter')
-	.setDescription('Renames a character which you own.')
-	.addStringOption(option => option.setName('oldname').setDescription('Current Character Name').setMinLength(1).setMaxLength(30).setRequired(true))
-	.addStringOption(option => option.setName('newname').setDescription('New Character Name').setMinLength(1).setMaxLength(30).setRequired(true)),
-
-
 	new SlashCommandBuilder().setName('addxp')
 	.setDescription('Adds/Subtracts XP to a character, it is not counted in the player xp total.')
 	.addStringOption(option => option.setName('character').setDescription('Character Name').setMinLength(1).setMaxLength(30).setRequired(true))
@@ -136,16 +130,12 @@ const commands = [
 	.setDescription("Adds an entry to the a character's approval log. Staff Only.")
 	.addStringOption(option => option.setName('character').setDescription('Character Name').setMinLength(1).setMaxLength(30).setRequired(true))
 	.addStringOption(option => option.setName('approval').setDescription('approval entry to add.').setMinLength(1).setMaxLength(120).setRequired(true)),
-
-	new SlashCommandBuilder().setName('returnallplayers')
-	.setDescription("Test Command.")
-	
 	
 ]
 .map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(token);
 
-rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
+rest.put(Routes.applicationGuildCommands(clientId, guildIdlive), { body: commands })
 	.then(() => console.log('Successfully registered application commands.'))
 	.catch(console.error);

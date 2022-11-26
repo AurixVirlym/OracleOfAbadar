@@ -32,6 +32,21 @@ client.once('ready', () => {
 });
 
 
+
+
+const ConfirmRow = new ActionRowBuilder()
+			.addComponents(
+				new ButtonBuilder()
+                .setCustomId('yes')
+                .setLabel('Yes')
+                .setStyle(ButtonStyle.Success),
+				new ButtonBuilder()
+                .setCustomId('no')
+                .setLabel('No')
+                .setStyle(ButtonStyle.Danger))
+
+
+
 const PlayerSchema = new mongoose.Schema({
 	DiscordId: {type: String, required: true},
 	Characters: Array, //for holding Name string and database id to link. Key ID /Value name
@@ -41,7 +56,7 @@ const PlayerSchema = new mongoose.Schema({
 	UntotalXP: Number,
 	CharacterSlots: Number //for max allowed characters
 
-  }, {collection: 'testplayer'});
+  }, {collection: 'player'});
 
   const ReportSchema = new mongoose.Schema({
 	Name: {type: String, required: true}, //add check for unique names only
@@ -50,8 +65,9 @@ const PlayerSchema = new mongoose.Schema({
 	Description: {type: String, required: true}, //think news and net
 	GMs: Array, //anyone who gets unassigned xp. 
 	Characters: Array, //id.
+	SSR: Boolean,
 	Published: {type: Boolean, required: true}, //to determine if the Report should in players hands.
-	},{collection: 'testreport'});
+	},{collection: 'report'});
 
 
 	const CharacterSchema = new mongoose.Schema({
@@ -69,15 +85,21 @@ const PlayerSchema = new mongoose.Schema({
 		PurchaseLog: Array,
 		ApprovalLog: Array,
 		AssignedReports: Array, //used to figure out so reports are given to the character.
-		},{collection: 'testchar'});
+		},{collection: 'char'});
 
 
 
-  const PlayerData = mongoose.model('testplayer',PlayerSchema)
-  const CharacterData = mongoose.model('testchar', CharacterSchema)
-  const ReportData = mongoose.model('testreport', ReportSchema)
+  const PlayerData = mongoose.model('player',PlayerSchema)
+  const CharacterData = mongoose.model('char', CharacterSchema)
+  const ReportData = mongoose.model('report', ReportSchema)
 
 
+
+  function CalcGoldFromXP(QueryCharInfo) {
+
+	return GoldAtLevel[QueryCharInfo.Level]+ (Math.floor(QueryCharInfo.CurrentXP/250)* GoldPerXP[QueryCharInfo.Level])
+
+  }
 
 
 
@@ -123,8 +145,7 @@ const PlayerSchema = new mongoose.Schema({
 		}
 		
 
-		QueryCharInfo.MaxGold = GoldAtLevel[QueryCharInfo.Level]
-		+ (Math.floor(QueryCharInfo.CurrentXP/250)* GoldPerXP[QueryCharInfo.Level])
+		QueryCharInfo.MaxGold = CalcGoldFromXP(QueryCharInfo)
 
 		StringToReply += "\n***" + QueryCharInfo.Name +"*** is level " + QueryCharInfo.Level + " with a max gold of " + QueryCharInfo.MaxGold + "."
 		await QueryCharInfo.save();
@@ -139,11 +160,17 @@ const PlayerSchema = new mongoose.Schema({
   }
 
   async function CharsAddToReport(CharsToAddArray,ReportToQuery,interaction) {
-	var StringToReply =""; 
+	var StringToReply ="ERR"; 
 	var QueryReportInfo = await ReportData.findOne({Name: ReportToQuery})
 	var SameCheckID;
 	CharsConfirmedArray = [];
 	if (QueryReportInfo !== null && CharsToAddArray !== undefined){
+
+	if (QueryReportInfo.SSR === true){
+		await interaction.reply({ content: "Report is an SSR.", embeds: [], components: []})
+		return
+	}
+
 	if (QueryReportInfo.Published === false){
 		
 		CharsToAddArray = CharsToAddArray.filter(function (el) {
@@ -180,10 +207,10 @@ const PlayerSchema = new mongoose.Schema({
 	//console.log(CharsConfirmedArray)
 	//QueryReportInfo.Characters = QueryReportInfo.Characters.concat(CharsConfirmedArray)
 
-} else {StringToReply = 'Report already published.'}
-} else {StringToReply = 'Report not found.'}
-	}
-await interaction.reply({ content: StringToReply})
+}else  {StringToReply = 'No characters found.'}
+} else  {StringToReply = 'Report already published.'}
+	} else {StringToReply = 'Report not found.'}
+await interaction.update({ content: StringToReply, embeds: [], components: []})
 
 }
 
@@ -191,6 +218,7 @@ await interaction.reply({ content: StringToReply})
 
 async function PublishSR(QueryReportInfo,interaction){
 
+	var ProcessSuccess = 0 
 	var StringToReply =""; 
 	if (QueryReportInfo !== null){
 	if (QueryReportInfo.Published === false){
@@ -207,8 +235,11 @@ async function PublishSR(QueryReportInfo,interaction){
 				QueryPlayerInfo.UnassignedReports.push(QueryReportInfo._id);
 				StringToReply += '\nGave report ***"' + QueryReportInfo.Name +'"*** to ' + QueryPlayerInfo.DiscordId + ' as a unassigned report.'
 				await QueryPlayerInfo.save()
+				ProcessSuccess += 1 
+
 			} else {
 				StringToReply += '\nDatabase ID' + Element + "not found."
+
 			}
 			
 		  }
@@ -238,8 +269,7 @@ async function PublishSR(QueryReportInfo,interaction){
 					StringToReply += '\n***' + QueryCharInfo.Name + '*** gained enough XP to gain level ' + QueryCharInfo.Level + '!' 
 				}
 	
-				QueryCharInfo.MaxGold = GoldAtLevel[QueryCharInfo.Level]
-				+ (Math.floor(QueryCharInfo.CurrentXP/250)* GoldPerXP[QueryCharInfo.Level])
+				QueryCharInfo.MaxGold = CalcGoldFromXP(QueryCharInfo)
 				
 				await QueryCharInfo.save();
 				} else {
@@ -256,7 +286,16 @@ async function PublishSR(QueryReportInfo,interaction){
 
 } else {StringToReply = 'Report ' + QueryReportInfo.Name + ' not found.'}
 
-await interaction.reply({ content: StringToReply})
+if (StringToReply.length >= 2000){
+	StringToReply = StringToReply.slice(0, 1984) + "\nMessageTooLong"
+}
+
+if (QueryReportInfo.SSR === true) {
+	StringToReply = "SSR Published and given out to " + ProcessSuccess + "/" + QueryReportInfo.GMs.length +" players."
+}
+
+
+await interaction.update({ content: StringToReply, embeds: [], components: []})
 
 }
 
@@ -567,7 +606,7 @@ client.on('interactionCreate', async interaction => {
 embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], components: [rowchar]})
 
 
-	const collector = embedMessage.createMessageComponentCollector({
+	var collector = embedMessage.createMessageComponentCollector({
 		filter: ({user}) => user.id === interaction.user.id, time: 180000
 	  })
 	  
@@ -904,7 +943,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 	embedMessage = await interaction.reply({ embeds: [InfoCharEmbed], components: [rowinfochar]})
 	
 	
-		const collector = embedMessage.createMessageComponentCollector({
+		var collector = embedMessage.createMessageComponentCollector({
 			filter: ({user}) => user.id === interaction.user.id, time: 180000
 		  })
 		
@@ -1044,8 +1083,9 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
             interaction.reply({ content: "You lack the role(s) to use this command."})
             break
           }
-
-
+		  	var StringToReply = 'ERR'
+		  	var GMstoReport = []
+		  	var MakeSSR = false
 			var PlayerDiscordMention = interaction.options.getString('gm');  
 			var ReportName = interaction.options.getString('reportname'); 
 		
@@ -1061,37 +1101,118 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			var	ReportName =ReportName.replace(/[\\@#&!`*_~<>|]/g, "");
 			var PlayerDiscordID= PlayerDiscordMention.replace(/[\\<>@#&!]/g, "")
 
+
+
+
+
+			EmbedString = 'Do you wish to make the SR "**' + ReportName + '**" - ran by "**' + PlayerDiscordMention + '**"?'  
+				
+			var ConfirmEmbed = new EmbedBuilder()
+			.setColor(0x0099FF)
+			.setDescription(EmbedString)
+			.setTimestamp()
+			.setFooter({ text: 'Absalom Living Campaign'});
+	
+			embedMessage = await interaction.reply({ embeds: [ConfirmEmbed], components: [ConfirmRow]})
+	
+	
+			var collector = embedMessage.createMessageComponentCollector({
+				filter: ({user}) => user.id === interaction.user.id, time: 180000
+			  })
+			  
+			collector.on('collect', async interaction => {
+				
+				switch (interaction.customId) {
+					case 'yes':
+					
+					
+			if (PlayerDiscordMention === "@everyone"){
+				
+				if (interaction.member.roles.cache.some(r=>[RoleBotAdmin,RoleStaff].includes(r.name)) ){
+
+					MakeSSR = true
+					StringToReply = 'Special Session Report ***"'+ ReportName + '"*** has been created'
+					await PlayerData.find({  Status: "Active"}).then((PlayerDatas) => {
+						PlayerDatas.forEach((PlayerData) => {
+							GMstoReport.push(PlayerData._id)
+			
+						});})
+
+				}
+				else {
+		  		interaction.update({ content: "You lack the role(s) to make a SSR report.", embeds: [], components: []})
+				break
+		  		}
+
+			} else {
+
 			try {
 			var PlayerName = await client.users.fetch(PlayerDiscordID)
 			} catch (error) {
-			await interaction.reply({ content: 'Incorrect Player Mention'})
+			await interaction.update({ content: 'Incorrect Player Mention', embeds: [], components: []})
+			console.log(PlayerDiscordMention)
 			break;
 			}
+				
 
 			if (typeof PlayerName != undefined) {
 				var QueryPlayerInfo = await PlayerData.findOne({DiscordId: PlayerDiscordMention})
-				var QueryReportInfo = await ReportData.findOne({Name: ReportName})
 			  } else {
-				await interaction.reply({ content: 'Incorrect Player Mention'})
+				await interaction.update({ content: 'Incorrect Player Mention', embeds: [], components: []})
 				break;
 			  }
 
-			  if (QueryPlayerInfo != null && QueryReportInfo === null){
+			  if (QueryPlayerInfo === null){
+				await interaction.update({ content: 'Name already taken or GM did not have a player profile assigned to them.', embeds: [], components: []})
+				break
+			}
+				GMstoReport = QueryPlayerInfo._id
+				StringToReply = 'Report for ***"'+ ReportName + '"*** has been created, ran by ' + PlayerName.username
+			}
+
+			
+				
+
+
+				var QueryReportInfo = await ReportData.findOne({Name: ReportName})
+			  if (QueryReportInfo === null){
 	
 				item = {
-					Name: ReportName, //add check for unique names only
+					Name: ReportName, 
 					RunDate: Date(), //?
 					XP: 250, //default 250 but add option
 					Description: "The Description has not been updated.",
-					GMs: [QueryPlayerInfo._id], //anyone who gets unassigned xp. 
+					GMs: GMstoReport, //anyone who gets unassigned xp. 
 					Characters: [], //id.
+					SSR: MakeSSR,
 					Published: false, //to determine if the Report should in players hands.
 					}
 
 			var data = new ReportData(item)
 			await data.save();
-			await interaction.reply({ content:'Report for ***"'+ ReportName + '"*** has been created, ran by ' + PlayerName.username})
- 	}		else {await interaction.reply({ content: 'Name already taken or GM did not have a player profile assigned to them.'})}
+			await interaction.update({ content: StringToReply, embeds: [], components: []})
+ 	}		else {await interaction.update({ content: 'Name already taken or GM did not have a player profile assigned to them.', embeds: [], components: []})}
+						
+						collector.stop()
+	
+						break;
+					
+					case 'no':
+						await interaction.update({
+							content: "Cancelled.", embeds: [], components: []
+					 })
+					 collector.stop()
+					 break
+	
+				}
+					
+			  })
+
+
+
+
+
+
 		
 			break;
 
@@ -1133,9 +1254,54 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			await interaction.reply({ content: 'No characters given.'})
 			break
 			}
-		
+			
+			
 		var	ReportName = ReportName.replace(/[\\@#&!`*_~<>|]/g, "");
-			CharsAddToReport(CharsFromMessage,ReportName,interaction)
+
+
+		EmbedString = 'Do you wish to add the following characters to SR "**' + ReportName + '**"?\n' + CharsFromMessage
+				
+		var ConfirmEmbed = new EmbedBuilder()
+		.setColor(0x0099FF)
+		.setDescription(EmbedString)
+		.setTimestamp()
+		.setFooter({ text: 'Absalom Living Campaign'});
+
+		embedMessage = await interaction.reply({ embeds: [ConfirmEmbed], components: [ConfirmRow]})
+
+
+		var collector = embedMessage.createMessageComponentCollector({
+			filter: ({user}) => user.id === interaction.user.id, time: 180000
+		  })
+		  
+		collector.on('collect', async interaction => {
+			
+			switch (interaction.customId) {
+				case 'yes':
+				
+				
+					CharsAddToReport(CharsFromMessage,ReportName,interaction)
+					collector.stop()
+
+					break;
+				
+				case 'no':
+					await interaction.update({
+						content: "Cancelled.", embeds: [], components: []
+				 })
+				 collector.stop()
+				 break
+
+			}
+				
+		  })
+
+
+
+
+
+
+
 	
 			break
 		
@@ -1164,18 +1330,73 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			
 		var	ReportName = ReportName.replace(/[\\@#&!`*_~<>|]/g, "");
 
-		var QueryReportInfo = await ReportData.findOne({Name: ReportName})
+
+		EmbedString = 'Do you wish to publish the SR "**' + ReportName + '**"?'
+				
+				var ConfirmEmbed = new EmbedBuilder()
+				.setColor(0x0099FF)
+				.setDescription(EmbedString)
+				.setTimestamp()
+				.setFooter({ text: 'Absalom Living Campaign'});
+
+			embedMessage = await interaction.reply({ embeds: [ConfirmEmbed], components: [ConfirmRow]})
+
+			var collector = embedMessage.createMessageComponentCollector({
+				filter: ({user}) => user.id === interaction.user.id, time: 180000
+			  })
+			  
+			collector.on('collect', async interaction => {
+				
+				switch (interaction.customId) {
+					case 'yes':
+						
+					var QueryReportInfo = await ReportData.findOne({Name: ReportName})
 		
-		if (QueryReportInfo !== null){
+					if (QueryReportInfo !== null){
+						
+						
+						if (QueryReportInfo.SSR === true){
+							if (interaction.member.roles.cache.some(r=>[RoleBotAdmin,RoleStaff,].includes(r.name)) ) {}
+							else {
+							interaction.update({ content: "You lack the role(s) to modify this SSR.", embeds: [], components: []})
+							collector.stop()
+							 break
+							
+							}
+					}
+						
+						PublishSR(QueryReportInfo,interaction)
+						collector.stop()
+					
+					
+					} else {await interaction.update({ content: 'Report ' + ReportName + ' not found.', embeds: [], components: []})}
+			
+				
+						collector.stop()
+						break
 
-			PublishSR(QueryReportInfo,interaction)
-		
-		} else {await interaction.reply({ content: 'Report ' + ReportName + ' not found.'})}
+						break;
+					
+					case 'no':
+						await interaction.update({
+							content: "Cancelled.", embeds: [], components: []
+					 })
+					 collector.stop()
+					 break
 
+				}
+					
+			  })
 
-			break
+			  break
+			  
+			case'changereportdescription': 
 
-			case'changereportdescription':
+			if (interaction.member.roles.cache.some(r=>[RoleBotAdmin,RoleStaff,RolePlayerGM].includes(r.name)) ) {}
+         	 else {
+            interaction.reply({ content: "You lack the role(s) to use this command."})
+            break
+			 }
 			var ReportName = interaction.options.getString('reportname'); 
 			var DescriptionForReport = interaction.options.getString('reportdescription'); 
 	
@@ -1194,6 +1415,13 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 		var QueryReportInfo = await ReportData.findOne({Name: ReportName})
 		
 		if (QueryReportInfo !== null){
+			if (QueryReportInfo.SSR === true){
+				if (interaction.member.roles.cache.some(r=>[RoleBotAdmin,RoleStaff,].includes(r.name)) ) {}
+				else {
+				interaction.reply({ content: "You lack the role(s) to modify this SSR."})
+				break
+				}
+		}
 
 			QueryReportInfo.Description = DescriptionForReport
 			await QueryReportInfo.save()
@@ -1234,13 +1462,18 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			var GMid = QueryPlayerData.DiscordId.replace(/[\\@#&!`*_~<>|]/g, "")
 			console.log(GMid)
 			}
-			var GMName = await client.users.fetch(GMid);
+			if (QueryReportInfo.SSR === false){
+				var GMName = await client.users.fetch(GMid);
+			}
+			
 
 			if (typeof GMName != undefined && GMName != null){
 			var SRtitle = QueryReportInfo.Name + " - Ran by " + GMName.username }
-			else {
-			var SRtitle = QueryReportInfo.Name
-			}  
+			else if (QueryReportInfo.SSR === true) {
+			var SRtitle = QueryReportInfo.Name + " - Special Session Report."
+			}  else {
+				var SRtitle = QueryReportInfo.Name
+				}
 		
 		
 		const rowlist = new ActionRowBuilder()
@@ -1277,7 +1510,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]})
 
 
-	const collector = embedMessage.createMessageComponentCollector({
+	var collector = embedMessage.createMessageComponentCollector({
 		filter: ({user}) => user.id === interaction.user.id, time: 180000
 	  })
 	  
@@ -1361,7 +1594,30 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 				}
 			
 			var	ReportName = ReportName.replace(/[\\@#&!`*_~<>|]/g, "");
-			var PlayerName = await client.users.fetch(PlayerDiscordID)
+
+
+			EmbedString = 'Do you wish to add the unassigned report "**' + ReportName + '**" to **"' + CharName +'**"?'
+				
+		var ConfirmEmbed = new EmbedBuilder()
+		.setColor(0x0099FF)
+		.setDescription(EmbedString)
+		.setTimestamp()
+		.setFooter({ text: 'Absalom Living Campaign'});
+
+		embedMessage = await interaction.reply({ embeds: [ConfirmEmbed], components: [ConfirmRow]})
+
+
+		var collector = embedMessage.createMessageComponentCollector({
+			filter: ({user}) => user.id === interaction.user.id, time: 180000
+		  })
+		  
+		collector.on('collect', async interaction => {
+			
+			switch (interaction.customId) {
+				case 'yes':
+
+
+					var PlayerName = await client.users.fetch(PlayerDiscordID)
 
 			
 			if (typeof PlayerName != undefined) {
@@ -1372,13 +1628,13 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 				console.log(QueryReportInfo)
 				console.log(QueryCharInfo)
 			  } else {
-				await interaction.reply({ content: 'Did not find all the database entries. Check for typos.'})
+				await interaction.update({ content: 'Did not find all the database entries. Check for typos.', embeds: [], components: []})
 				break;
 			  }
 
 			  if (QueryPlayerInfo != null && QueryReportInfo !== null && QueryCharInfo != null){
 				
-				if (QueryCharInfo.BelongsTo = QueryPlayerInfo.DiscordId){
+				if (QueryCharInfo.BelongsTo == QueryPlayerInfo.DiscordId){
 					if (QueryPlayerInfo.UnassignedReports.includes(QueryReportInfo._id) == true){
 
 	
@@ -1395,8 +1651,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 					StringToReply += '\n***' + QueryCharInfo.Name + '*** gained enough XP to gain level ' + QueryCharInfo.Level + '!' 
 					}
 	
-					QueryCharInfo.MaxGold = GoldAtLevel[QueryCharInfo.Level]
-					+ (Math.floor(QueryCharInfo.CurrentXP/250)* GoldPerXP[QueryCharInfo.Level])
+					QueryCharInfo.MaxGold = CalcGoldFromXP(QueryCharInfo)
 				
 					await QueryCharInfo.save();
 					var index = QueryPlayerInfo.UnassignedReports.indexOf(QueryReportInfo._id)
@@ -1407,13 +1662,39 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 					
 					await QueryPlayerInfo.save();
 					StringToReply += '\n***' + QueryReportInfo.Name +'*** has been given to ***' + QueryCharInfo.Name +'!***'
-					await interaction.reply({ content: StringToReply})
+					await interaction.update({ content: StringToReply, embeds: [], components: []})
 
 
 
-					} else {await interaction.reply({ content: '***'+ QueryReportInfo.Name+'*** session report does not belong to you.'})}
-				} else {await interaction.reply({ content: '***'+ QueryCharInfo.Name+'*** character does not belong to you.'})}
- 	}		else {await interaction.reply({ content: 'Did not find every database entry.'})}
+					} else {await interaction.update({ content: '***'+ QueryReportInfo.Name+'*** session report does not belong to you / you already used it.', embeds: [], components: []})}
+				} else {await interaction.update({ content: '***'+ QueryCharInfo.Name+'*** character does not belong to you.', embeds: [], components: []})}
+ 	}		else {await interaction.update({ content: 'Did not find every database entry.', embeds: [], components: []})}
+				
+				
+					collector.stop()
+
+					break;
+				
+				case 'no':
+					await interaction.update({
+						content: "Cancelled.", embeds: [], components: []
+				 })
+				 collector.stop()
+				 break
+
+			}
+				
+		  })
+
+
+
+
+
+
+
+
+
+			
 			break
 
 
@@ -1434,9 +1715,30 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 				await interaction.reply({ content: 'Name is too long.'})
 				break
 				}
-			
-			//var	ReportName = ReportName.replace(/[\\@#&!`*_~<>|]/g, "");
-			var PlayerName = await client.users.fetch(PlayerDiscordID)
+
+
+				EmbedString = 'Do you wish to buy/sell "**' + PurchasedItem + '**"' + ' for **' + PurchasedValue + ' gp** on "**' + CharName + '**"'
+				
+				var ConfirmEmbed = new EmbedBuilder()
+				.setColor(0x0099FF)
+				.setDescription(EmbedString)
+				.setTimestamp()
+				.setFooter({ text: 'Absalom Living Campaign'});
+		
+				embedMessage = await interaction.reply({ embeds: [ConfirmEmbed], components: [ConfirmRow]})
+		
+		
+				var collector = embedMessage.createMessageComponentCollector({
+					filter: ({user}) => user.id === interaction.user.id, time: 180000
+				  })
+				  
+				collector.on('collect', async interaction => {
+					
+					switch (interaction.customId) {
+						case 'yes':
+						
+						
+							var PlayerName = await client.users.fetch(PlayerDiscordID)
 
 			
 			if (typeof PlayerName != undefined) {
@@ -1447,7 +1749,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 			}
 
 			  if (QueryPlayerInfo != null && QueryCharInfo != null){
-				if (QueryCharInfo.BelongsTo = QueryPlayerInfo.DiscordId){
+				if (QueryCharInfo.BelongsTo == QueryPlayerInfo.DiscordId){
 
 					PurchaseDate = new Date()
 					PurchaseDate = PurchaseDate.toLocaleString().split(',')[0]
@@ -1460,9 +1762,9 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 						QueryCharInfo.SpentGold += PurchasedValue
 
 						await QueryCharInfo.save()
-						await interaction.reply({ content: 'Added Entry: ' +'"' + PurchaseEntry[0] + " - " + PurchaseEntry[1] + PurchaseEntry[2] + " for " + PurchaseEntry[3]+' gp."' + " to " +QueryCharInfo.Name + "."})
+						await interaction.update({ content: 'Added Entry: ' +'"' + PurchaseEntry[0] + " - " + PurchaseEntry[1] + PurchaseEntry[2] + " for " + PurchaseEntry[3]+' gp."' + " to " +QueryCharInfo.Name + ".", embeds: [], components: []})
 					
-						} else {await interaction.reply({ content: QueryCharInfo.Name + " can't afford this item."})}
+						} else {await interaction.update({ content: QueryCharInfo.Name + " can't afford this item.", embeds: [], components: []})}
 
 					} else if (PurchasedValue < 0) {
 						
@@ -1472,12 +1774,12 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 						QueryCharInfo.SpentGold += PurchasedValue
 
 						await QueryCharInfo.save()
-						await interaction.reply({ content: 'Added Entry: ' +'"' + PurchaseEntry[0] + " - " + PurchaseEntry[1] + PurchaseEntry[2] + " for " + PurchaseEntry[3]+' gp"' + " to " +QueryCharInfo.Name + "."})
+						await interaction.update({ content: 'Added Entry: ' +'"' + PurchaseEntry[0] + " - " + PurchaseEntry[1] + PurchaseEntry[2] + " for " + PurchaseEntry[3]+' gp"' + " to " +QueryCharInfo.Name + ".", embeds: [], components: []})
 						
-						} else {await interaction.reply({ content: QueryCharInfo.Name + " never spent this much gp."})}
+						} else {await interaction.update({ content: QueryCharInfo.Name + " never spent this much gp.", embeds: [], components: []})}
 				
 						} else {
-						await interaction.reply({ content: "ERR"})}
+						await interaction.update({ content: "ERR", embeds: [], components: []})}
 					
 					
 					
@@ -1486,14 +1788,41 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 
 
 				}	else{
-					await interaction.reply({ content: 'Character does not belong to you, get your own, stinky.'})
+					await interaction.update({ content: 'Character does not belong to you, get your own, stinky.', embeds: [], components: []})
 					break;
 				  } 
 		
 			} else{
-				await interaction.reply({ content: 'Did not find all the database entries. Check for typos.'})
+				await interaction.update({ content: 'Did not find all the database entries. Check for typos.', embeds: [], components: []})
 				break;
 			  }
+							collector.stop()
+		
+							break;
+						
+						case 'no':
+							await interaction.update({
+								content: "Cancelled.", embeds: [], components: []
+						 })
+						 collector.stop()
+						 break
+		
+					}
+						
+				  })
+		
+
+
+
+
+
+
+
+
+
+
+			
+		
 
 		break
 
@@ -1562,6 +1891,19 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 
 
 
+
+		case'returnallplayers':
+		var AllPlayers = []
+		await PlayerData.find({ Characters:{$exists: true, $not: {$size: 0}}, Status: "Active"}).then((PlayerDatas) => {
+			PlayerDatas.forEach((PlayerData) => {
+				AllPlayers.push(PlayerData.DiscordId)
+
+			});})
+
+
+		console.log(AllPlayers)
+		break
+
 		case'addapproval':
 
 			if (interaction.member.roles.cache.some(r=>[RoleBotAdmin,RoleStaff].includes(r.name)) ) {}
@@ -1585,38 +1927,78 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 				await interaction.reply({ content: 'Approval length too long.'})
 				break
 				}
-			
-			//var	ReportName = ReportName.replace(/[\\@#&!`*_~<>|]/g, "");
-			var PlayerName = await client.users.fetch(PlayerDiscordID)
 
-			
-			if (typeof PlayerName != undefined) {
-				var QueryCharInfo = await CharacterData.findOne({Name: CharName})
-				console.log(QueryCharInfo)
-			}
 
-			  if (QueryCharInfo != null){
-			
-
-					ApprovalDate = new Date()
-					ApprovalDate = ApprovalDate.toLocaleString().split(',')[0]
-					
-						RemainingGold  = QueryCharInfo.MaxGold - QueryCharInfo.SpentGold.toFixed(2)
-						
-						var ApprovalEntry = [ApprovalDate,"Approval: ", ApprovalLine , PlayerName.username, PlayerDiscordMention] //date,item approved,player approving, Discord ID of approver
-						QueryCharInfo.ApprovalLog.push(ApprovalEntry)
-					
-
-						await QueryCharInfo.save()
-						await interaction.reply({ content: 'Added Entry: ' +'"' + ApprovalEntry[0] + " - " + ApprovalEntry[1] + ApprovalEntry[2] + " by " + ApprovalEntry[3] + "/" + ApprovalEntry[4]+'"'})
-					
-						
-					
+				EmbedString = 'Do you wish to approve of "**' + ApprovalLine + '**" for "**' + CharName + '**"?'
 				
-			} else{
-				await interaction.reply({ content: 'Did not find all the database entries. Check for typos.'})
-				break;
-			  }
+		var ConfirmEmbed = new EmbedBuilder()
+		.setColor(0x0099FF)
+		.setDescription(EmbedString)
+		.setTimestamp()
+		.setFooter({ text: 'Absalom Living Campaign'});
+
+		embedMessage = await interaction.reply({ embeds: [ConfirmEmbed], components: [ConfirmRow]})
+
+
+		var collector = embedMessage.createMessageComponentCollector({
+			filter: ({user}) => user.id === interaction.user.id, time: 180000
+		  })
+		  
+		collector.on('collect', async interaction => {
+			
+			switch (interaction.customId) {
+				case 'yes':
+						var PlayerName = await client.users.fetch(PlayerDiscordID)
+
+			
+					if (typeof PlayerName != undefined) {
+						var QueryCharInfo = await CharacterData.findOne({Name: CharName})
+						console.log(QueryCharInfo)
+					}
+		
+					  if (QueryCharInfo != null){
+					
+		
+							ApprovalDate = new Date()
+							ApprovalDate = ApprovalDate.toLocaleString().split(',')[0]
+							
+								RemainingGold  = QueryCharInfo.MaxGold - QueryCharInfo.SpentGold.toFixed(2)
+								
+								var ApprovalEntry = [ApprovalDate,"Approval: ", ApprovalLine , PlayerName.username, PlayerDiscordMention] //date,item approved,player approving, Discord ID of approver
+								QueryCharInfo.ApprovalLog.push(ApprovalEntry)
+							
+		
+								await QueryCharInfo.save()
+								await interaction.update({ content: 'Added Entry: ' +'"' + ApprovalEntry[0] + " - " + ApprovalEntry[1] + ApprovalEntry[2] + " by " + ApprovalEntry[3] + "/" + ApprovalEntry[4]+'"', embeds: [], components: []})
+							
+								
+							
+						
+					} else{
+						await interaction.update({ content: 'Did not find all the database entries. Check for typos.', embeds: [], components: []})
+						break;
+					  }
+				
+					
+					collector.stop()
+
+					break;
+				
+				case 'no':
+					await interaction.update({
+						content: "Cancelled.", embeds: [], components: []
+				 })
+				 collector.stop()
+				 break
+
+			}
+				
+		  })
+
+
+
+		
+			
 
 		break
 	
@@ -1686,6 +2068,103 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 			}
 		break
 
+
+		case'renamecharacter':
+		var OldCharName = interaction.options.getString('oldname')
+		var NewCharName = interaction.options.getString('newname').replace(/[\\@#&!`*_~<>|]/g, "");
+
+
+			var PlayerDiscordID = interaction.user.id
+			var PlayerDiscordMention = "<@"+PlayerDiscordID+">"
+			
+			var StringToReply =""
+		
+			if (OldCharName == null || NewCharName == null){
+				await interaction.reply({ content: 'Not all inputs given.'})
+				break
+				} else if (NewCharName.length > 30){
+				await interaction.reply({ content: 'Name is too long.'})
+				break
+				}
+
+
+				EmbedString = 'You wish to rename "**' + OldCharName + '**" to "**' + NewCharName +'**"?'
+				
+				var ConfirmEmbed = new EmbedBuilder()
+				.setColor(0x0099FF)
+				.setDescription(EmbedString)
+				.setTimestamp()
+				.setFooter({ text: 'Absalom Living Campaign'});
+
+			embedMessage = await interaction.reply({ embeds: [ConfirmEmbed], components: [ConfirmRow]})
+			
+			var collector = embedMessage.createMessageComponentCollector({
+				filter: ({user}) => user.id === interaction.user.id, time: 180000
+			  })
+			
+			  
+			collector.on('collect', async interaction => {
+				
+				if (interaction.customId === 'yes'){
+
+
+					
+
+
+
+						var QueryPlayerInfo = await PlayerData.findOne({DiscordId: PlayerDiscordMention})
+						var QueryCharInfo = await CharacterData.findOne({Name: OldCharName})
+						var NewNameCheck = await CharacterData.findOne({Name: NewCharName})
+	
+					
+	
+					if (QueryPlayerInfo != null && QueryCharInfo != null && NewNameCheck == null){
+						if (QueryCharInfo.BelongsTo == QueryPlayerInfo.DiscordId){
+							
+							QueryCharInfo.Name = NewCharName
+							QueryCharInfo.save();
+
+							await interaction.update({
+								content: 'Renamed "**' + OldCharName + '**" to "**' + NewCharName +'**".', embeds: [], components: []
+							  })
+
+
+						} else {
+							await interaction.update({
+							content: "Character does not belong to you.", embeds: [], components: []
+						  })}
+						} else {
+							await interaction.update({
+								content: "Did not find player/character in database or name is already taken.", embeds: [], components: []
+							  })
+						}
+					
+					
+
+					} else if (interaction.customId === 'no'){
+					await interaction.update({
+						content: "Cancelled.", embeds: [], components: []
+					  })
+
+				}
+					
+			  })
+				
+			
+
+			
+
+
+			
+
+
+
+
+
+
+
+
+		break
 }
 	
 
@@ -1699,3 +2178,6 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 
 // Login to Discord with your client's token
 client.login( token );
+
+
+
