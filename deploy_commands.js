@@ -31,6 +31,7 @@ const commands = [
 		{ name: 'addchartosr', value: 'addchartosr' },
 		{ name: 'assignreporttochar', value: 'assignreporttochar' },
 		{ name: 'publishsessionreport', value: 'publishsessionreport' },
+		{ name: 'renamecharacter', value: 'renamecharacter' },
 		)),
 
     new SlashCommandBuilder().setName('addplayer')

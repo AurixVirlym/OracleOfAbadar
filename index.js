@@ -56,7 +56,7 @@ const PlayerSchema = new mongoose.Schema({
 	UntotalXP: Number,
 	CharacterSlots: Number //for max allowed characters
 
-  }, {collection: 'player'});
+  }, {collection: 'Players'});
 
   const ReportSchema = new mongoose.Schema({
 	Name: {type: String, required: true}, //add check for unique names only
@@ -67,7 +67,7 @@ const PlayerSchema = new mongoose.Schema({
 	Characters: Array, //id.
 	SSR: Boolean,
 	Published: {type: Boolean, required: true}, //to determine if the Report should in players hands.
-	},{collection: 'report'});
+	},{collection: 'Reports'});
 
 
 	const CharacterSchema = new mongoose.Schema({
@@ -85,13 +85,13 @@ const PlayerSchema = new mongoose.Schema({
 		PurchaseLog: Array,
 		ApprovalLog: Array,
 		AssignedReports: Array, //used to figure out so reports are given to the character.
-		},{collection: 'char'});
+		},{collection: 'Characters'});
 
 
 
-  const PlayerData = mongoose.model('player',PlayerSchema)
-  const CharacterData = mongoose.model('char', CharacterSchema)
-  const ReportData = mongoose.model('report', ReportSchema)
+  const PlayerData = mongoose.model('Players',PlayerSchema)
+  const CharacterData = mongoose.model('Characters', CharacterSchema)
+  const ReportData = mongoose.model('Reports', ReportSchema)
 
 
 
@@ -233,7 +233,7 @@ async function PublishSR(QueryReportInfo,interaction){
 				var QueryPlayerInfo = await PlayerData.findOne({_id: Element})
 			if (QueryPlayerInfo !== null) {
 				QueryPlayerInfo.UnassignedReports.push(QueryReportInfo._id);
-				StringToReply += '\nGave report ***"' + QueryReportInfo.Name +'"*** to ' + QueryPlayerInfo.DiscordId + ' as a unassigned report.'
+				StringToReply += '\nGave report ***"' + QueryReportInfo.Name +'"*** to ' + QueryPlayerInfo.DiscordId + ' as an unassigned report.'
 				await QueryPlayerInfo.save()
 				ProcessSuccess += 1 
 
@@ -341,6 +341,7 @@ client.on('interactionCreate', async interaction => {
 				+"\n***/purchase*** - Adds entires to a character's purchase log. Use postive gp to buy, negative gp to sell items. Use character name, case sensative."
 				+"\n***/recalculatecharacter*** - Recalculates a character's XP and Gold. Use character name, case sensative."
 				+"\n***/assignreporttochar*** - Assigns a Unassigned Report (GMXP) to a character. Use character name and SR name, case sensative for both."
+				+"\n***/renamecharacter*** - Updates the name of your character to a new one, case sensative."
 				+"\n***/changereportdescription*** - **GM Command** - Updates a SR description. Use SR name, case sensative."
 				+"\n***/newsessionreport*** - **GM Command** - Creates a new session report, SR name is case sensative and need to be unique. GM is the person who ran the game."
 				+"\n***/addchartosr*** - **GM Command** - Adds up to 8 characters (at a time) to an unpublished SR. Use character(s) name, case sensative, SR also case sensastive."
@@ -381,7 +382,7 @@ client.on('interactionCreate', async interaction => {
 				HelpToSend = "***/addapproval*** - **Staff Command** - Adds entires to a character's approval log. Use character name, case sensative."
 				break
 				case'newchar':
-				HelpToSend = "***/newchar*** - **Staff Command** - Creates a new character for a player on the oracle. Use Discord @mentions,character name is case sensative, needs to be unique."
+				HelpToSend = "***/newchar*** - **Staff Command** - Creates a new character for a player on the oracle. Use Discord @mentions, character name is case sensative, needs to be unique with 30 letter limit."
 				break
 				case'addxp':
 				HelpToSend = "***/addxp*** - **Staff Command** - Adds or subtracts XP to character which does not count towards a player's total XP."
@@ -400,6 +401,9 @@ client.on('interactionCreate', async interaction => {
 				break
 				case'publishsessionreport':
 				HelpToSend = "***/publishsessionreport*** - **GM Command** - Publishes an unpublished SR, giving out the rewards to the players and GM. Use SR name, case sensative."
+				break
+				case'renamecharacter':
+				HelpToSend = "***/renamecharacter*** - Updates the name of your character to a new one, case sensative. 30 letter limit."
 				break
 			}
 
@@ -2119,7 +2123,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 					
 	
 					if (QueryPlayerInfo != null && QueryCharInfo != null && NewNameCheck == null){
-						if (QueryCharInfo.BelongsTo == QueryPlayerInfo.DiscordId){
+						if (QueryCharInfo.BelongsTo == QueryPlayerInfo.DiscordId || interaction.member.roles.cache.some(r=>[RoleBotAdmin,RoleStaff].includes(r.name))){
 							
 							QueryCharInfo.Name = NewCharName
 							QueryCharInfo.save();
