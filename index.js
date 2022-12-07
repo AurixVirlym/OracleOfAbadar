@@ -538,7 +538,7 @@ client.on('interactionCreate', async interaction => {
 				CharInfo.push("\n"+ CharPulled.Status +" - " +`${CharPulled.Name}`
 				+ ' - Level: ' + CharPulled.Level 
 				+ ' - XP: ' + CharPulled.CurrentXP + "/1000"
-				+ ' - Gold: ' + (CharPulled.MaxGold - CharPulled.SpentGold.toFixed(2)) + "/" + CharPulled.MaxGold)
+				+ ' - Gold: ' + (CharPulled.MaxGold - CharPulled.SpentGold.toFixed(2)).toFixed(2) + "/" + CharPulled.MaxGold)
 		
 				QueryPlayerInfo.TotalXP += CharPulled.TotalXP - CharPulled.ManualXP
 			
@@ -1009,7 +1009,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			if (interaction.customId === 'fowardId' || 'backID' && interaction.customId !== 'characterinfo'){
 			switch(currentPage){
 				case"purchaselog":
-				StringToEmbed = bold("Gold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)) + "/" + QueryCharacterInfo.MaxGold)+
+				StringToEmbed = bold("Gold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)).toFixed(2) + "/" + QueryCharacterInfo.MaxGold)+
 				"\n**Purchase Log:** " + PurchaseLogInfo.slice(currentIndex, currentIndex + 10 ).toString().replace(/,/g,"")
 				break
 				
