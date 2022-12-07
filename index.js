@@ -978,7 +978,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 				currentIndex = 0
 				MaxIndexLength = PurchaseLogInfo.length
 				currentPage = interaction.customId
-				StringToEmbed = bold("Gold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)) + "/" + QueryCharacterInfo.MaxGold)+
+				StringToEmbed = bold("Gold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)).toFixed(2) + "/" + QueryCharacterInfo.MaxGold)+
 				"\n**Purchase Log:** " + PurchaseLogInfo.slice(currentIndex, currentIndex + 10 ).toString().replace(/,/g,"")
 			}
 
@@ -994,7 +994,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 				MaxIndexLength = 0
 				currentPage = interaction.customId
 				StringToEmbed = bold("Level: "+ QueryCharacterInfo.Level + " - XP: " + QueryCharacterInfo.CurrentXP + "/1000")
-				+"\nGold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)) + "/" + QueryCharacterInfo.MaxGold
+				+"\nGold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)).toFixed(2) + "/" + QueryCharacterInfo.MaxGold
 				+"\nStatus: " + QueryCharacterInfo.Status
 			}
 			
