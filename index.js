@@ -16,6 +16,12 @@ const RoleBotAdmin = "Bot Admin"
 const RoleStaff = "Staff"
 const RolePlayerGM = "Player GM"
 
+const DateOptions = {
+	day: "numeric",
+	month: "numeric",
+	year: "numeric",
+  }
+
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -841,7 +847,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 
 			  if (QueryCharacterInfo != null){
 				var CharInfoSting = bold("Level: "+ QueryCharacterInfo.Level + " - XP: " + QueryCharacterInfo.CurrentXP + "/1000")
-				+"\nGold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)) + "/" + QueryCharacterInfo.MaxGold
+				+"\nGold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)).toFixed(2) + "/" + QueryCharacterInfo.MaxGold
 				+"\nStatus: " + QueryCharacterInfo.Status
 				
 			try {
@@ -869,7 +875,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 					 QueryReportInfo = await ReportData.findOne({_id: IDtofind})
 
 				 if (QueryReportInfo !== null){
-					AssignedReportInfo.push("\n"+ QueryReportInfo.RunDate.toLocaleString().split(',')[0] +" - "+ QueryReportInfo.Name + " - XP: "  + QueryReportInfo.XP)
+					AssignedReportInfo.push("\n"+ QueryReportInfo.RunDate.toLocaleString('en-GB', DateOptions).split(',')[0] +" - "+ QueryReportInfo.Name + " - XP: "  + QueryReportInfo.XP)
 				 } else {
 					AssignedReportInfo.push("\n***ERR*** - Failed To Find Report: " + QueryCharacterInfo.AssignedReports[index])
 				 }
@@ -1756,7 +1762,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 				if (QueryCharInfo.BelongsTo == QueryPlayerInfo.DiscordId){
 
 					PurchaseDate = new Date()
-					PurchaseDate = PurchaseDate.toLocaleString().split(',')[0]
+					PurchaseDate = PurchaseDate.toLocaleString('en-GB', DateOptions).split(',')[0]
 					
 					if (PurchasedValue >= 0) {
 						RemainingGold  = QueryCharInfo.MaxGold - QueryCharInfo.SpentGold.toFixed(2)
@@ -1964,7 +1970,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 					
 		
 							ApprovalDate = new Date()
-							ApprovalDate = ApprovalDate.toLocaleString().split(',')[0]
+							ApprovalDate = ApprovalDate.toLocaleString('en-GB', DateOptions).split(',')[0]
 							
 								RemainingGold  = QueryCharInfo.MaxGold - QueryCharInfo.SpentGold.toFixed(2)
 								
