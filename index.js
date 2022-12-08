@@ -15,7 +15,7 @@ console.log(databasetoken);
 const RoleBotAdmin = "Bot Admin"
 const RoleStaff = "Staff"
 const RolePlayerGM = "Player GM"
-
+const CollecterTimeout = 600000
 const DateOptions = {
 	day: "numeric",
 	month: "numeric",
@@ -105,6 +105,24 @@ const PlayerSchema = new mongoose.Schema({
 
 	return GoldAtLevel[QueryCharInfo.Level]+ (Math.floor(QueryCharInfo.CurrentXP/250)* GoldPerXP[QueryCharInfo.Level])
 
+  }
+
+  function EuroDateFunc(ToFormatDate) {
+	let date, month, year;
+
+	date = ToFormatDate.getUTCDate();
+	month = ToFormatDate.getUTCMonth() + 1;
+	year = ToFormatDate.getUTCFullYear();
+  
+	  date = date
+		  .toString()
+		  .padStart(2, '0');
+  
+	  month = month
+		  .toString()
+		  .padStart(2, '0');
+  
+	return `${date}/${month}/${year}`;
   }
 
 
@@ -617,7 +635,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 
 
 	var collector = embedMessage.createMessageComponentCollector({
-		filter: ({user}) => user.id === interaction.user.id, time: 180000
+		filter: ({user}) => user.id === interaction.user.id, time: CollecterTimeout
 	  })
 	  
 	  let currentIndex = 0
@@ -875,7 +893,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 					 QueryReportInfo = await ReportData.findOne({_id: IDtofind})
 
 				 if (QueryReportInfo !== null){
-					AssignedReportInfo.push("\n"+ QueryReportInfo.RunDate.toLocaleString('en-GB', DateOptions).split(',')[0] +" - "+ QueryReportInfo.Name + " - XP: "  + QueryReportInfo.XP)
+					AssignedReportInfo.push("\n"+ EuroDateFunc(QueryReportInfo.RunDate) +" - "+ QueryReportInfo.Name + " - XP: "  + QueryReportInfo.XP)
 				 } else {
 					AssignedReportInfo.push("\n***ERR*** - Failed To Find Report: " + QueryCharacterInfo.AssignedReports[index])
 				 }
@@ -954,7 +972,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 	
 	
 		var collector = embedMessage.createMessageComponentCollector({
-			filter: ({user}) => user.id === interaction.user.id, time: 180000
+			filter: ({user}) => user.id === interaction.user.id, time: CollecterTimeout
 		  })
 		
 		  let MaxIndexLength = 0
@@ -1009,7 +1027,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			if (interaction.customId === 'fowardId' || 'backID' && interaction.customId !== 'characterinfo'){
 			switch(currentPage){
 				case"purchaselog":
-				StringToEmbed = bold("Gold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)).toFixed(2) + "/" + QueryCharacterInfo.MaxGold)+
+				StringToEmbed = bold("Gold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)) + "/" + QueryCharacterInfo.MaxGold)+
 				"\n**Purchase Log:** " + PurchaseLogInfo.slice(currentIndex, currentIndex + 10 ).toString().replace(/,/g,"")
 				break
 				
@@ -1127,7 +1145,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 	
 	
 			var collector = embedMessage.createMessageComponentCollector({
-				filter: ({user}) => user.id === interaction.user.id, time: 180000
+				filter: ({user}) => user.id === interaction.user.id, time: CollecterTimeout
 			  })
 			  
 			collector.on('collect', async interaction => {
@@ -1281,7 +1299,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 
 
 		var collector = embedMessage.createMessageComponentCollector({
-			filter: ({user}) => user.id === interaction.user.id, time: 180000
+			filter: ({user}) => user.id === interaction.user.id, time: CollecterTimeout
 		  })
 		  
 		collector.on('collect', async interaction => {
@@ -1352,7 +1370,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			embedMessage = await interaction.reply({ embeds: [ConfirmEmbed], components: [ConfirmRow]})
 
 			var collector = embedMessage.createMessageComponentCollector({
-				filter: ({user}) => user.id === interaction.user.id, time: 180000
+				filter: ({user}) => user.id === interaction.user.id, time: CollecterTimeout
 			  })
 			  
 			collector.on('collect', async interaction => {
@@ -1521,7 +1539,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 
 
 	var collector = embedMessage.createMessageComponentCollector({
-		filter: ({user}) => user.id === interaction.user.id, time: 180000
+		filter: ({user}) => user.id === interaction.user.id, time: CollecterTimeout
 	  })
 	  
 	  let currentIndex = 0
@@ -1618,7 +1636,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 
 
 		var collector = embedMessage.createMessageComponentCollector({
-			filter: ({user}) => user.id === interaction.user.id, time: 180000
+			filter: ({user}) => user.id === interaction.user.id, time: CollecterTimeout
 		  })
 		  
 		collector.on('collect', async interaction => {
@@ -1739,7 +1757,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 		
 		
 				var collector = embedMessage.createMessageComponentCollector({
-					filter: ({user}) => user.id === interaction.user.id, time: 180000
+					filter: ({user}) => user.id === interaction.user.id, time: CollecterTimeout
 				  })
 				  
 				collector.on('collect', async interaction => {
@@ -1762,14 +1780,14 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 				if (QueryCharInfo.BelongsTo == QueryPlayerInfo.DiscordId){
 
 					PurchaseDate = new Date()
-					PurchaseDate = PurchaseDate.toLocaleString('en-GB', DateOptions).split(',')[0]
+					PurchaseDate = EuroDateFunc(PurchaseDate)
 					
 					if (PurchasedValue >= 0) {
 						RemainingGold  = QueryCharInfo.MaxGold - QueryCharInfo.SpentGold.toFixed(2)
 						if (PurchasedValue <= RemainingGold){
 						var PurchaseEntry = [PurchaseDate,"Bought: ",PurchasedItem,PurchasedValue] //date,sold/bought,item,value.
 						QueryCharInfo.PurchaseLog.push(PurchaseEntry)
-						QueryCharInfo.SpentGold += PurchasedValue
+						QueryCharInfo.SpentGold = (QueryCharInfo.SpentGold + PurchasedValue).toFixed(2)
 
 						await QueryCharInfo.save()
 						await interaction.update({ content: 'Added Entry: ' +'"' + PurchaseEntry[0] + " - " + PurchaseEntry[1] + PurchaseEntry[2] + " for " + PurchaseEntry[3]+' gp."' + " to " +QueryCharInfo.Name + ".", embeds: [], components: []})
@@ -1781,7 +1799,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 						if (QueryCharInfo.SpentGold >= PurchasedValue){
 						var PurchaseEntry = [PurchaseDate,"Sold: ",PurchasedItem,PurchasedValue] //date,sold/bought,item,value.
 						QueryCharInfo.PurchaseLog.push(PurchaseEntry)
-						QueryCharInfo.SpentGold += PurchasedValue
+						QueryCharInfo.SpentGold = (QueryCharInfo.SpentGold + PurchasedValue).toFixed(2)
 
 						await QueryCharInfo.save()
 						await interaction.update({ content: 'Added Entry: ' +'"' + PurchaseEntry[0] + " - " + PurchaseEntry[1] + PurchaseEntry[2] + " for " + PurchaseEntry[3]+' gp"' + " to " +QueryCharInfo.Name + ".", embeds: [], components: []})
@@ -1951,7 +1969,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 
 
 		var collector = embedMessage.createMessageComponentCollector({
-			filter: ({user}) => user.id === interaction.user.id, time: 180000
+			filter: ({user}) => user.id === interaction.user.id, time: CollecterTimeout
 		  })
 		  
 		collector.on('collect', async interaction => {
@@ -1970,9 +1988,9 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 					
 		
 							ApprovalDate = new Date()
-							ApprovalDate = ApprovalDate.toLocaleString('en-GB', DateOptions).split(',')[0]
+							ApprovalDate = EuroDateFunc(ApprovalDate)
 							
-								RemainingGold  = QueryCharInfo.MaxGold - QueryCharInfo.SpentGold.toFixed(2)
+								RemainingGold  = (QueryCharInfo.MaxGold - QueryCharInfo.SpentGold).toFixed(2)
 								
 								var ApprovalEntry = [ApprovalDate,"Approval: ", ApprovalLine , PlayerName.username, PlayerDiscordMention] //date,item approved,player approving, Discord ID of approver
 								QueryCharInfo.ApprovalLog.push(ApprovalEntry)
@@ -2109,7 +2127,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 			embedMessage = await interaction.reply({ embeds: [ConfirmEmbed], components: [ConfirmRow]})
 			
 			var collector = embedMessage.createMessageComponentCollector({
-				filter: ({user}) => user.id === interaction.user.id, time: 180000
+				filter: ({user}) => user.id === interaction.user.id, time: CollecterTimeout
 			  })
 			
 			  
