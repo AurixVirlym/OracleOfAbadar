@@ -864,9 +864,13 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			  }
 
 			  if (QueryCharacterInfo != null){
+
+				var CalcedGoldSpent = (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold).toFixed(2)
 				var CharInfoSting = bold("Level: "+ QueryCharacterInfo.Level + " - XP: " + QueryCharacterInfo.CurrentXP + "/1000")
-				+"\nGold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)).toFixed(2) + "/" + QueryCharacterInfo.MaxGold
+				+"\nGold: " + CalcedGoldSpent + "/" + QueryCharacterInfo.MaxGold
 				+"\nStatus: " + QueryCharacterInfo.Status
+
+				
 				
 			try {
 				PlayerName = await client.users.fetch(QueryCharacterInfo.BelongsTo.replace(/[\\<>@#&!]/g, ""))
@@ -996,7 +1000,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 				currentIndex = 0
 				MaxIndexLength = PurchaseLogInfo.length
 				currentPage = interaction.customId
-				StringToEmbed = bold("Gold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)).toFixed(2) + "/" + QueryCharacterInfo.MaxGold)+
+				StringToEmbed = "**Gold: " + CalcedGoldSpent + "/" + QueryCharacterInfo.MaxGold + "**" +
 				"\n**Purchase Log:** " + PurchaseLogInfo.slice(currentIndex, currentIndex + 10 ).toString().replace(/,/g,"")
 			}
 
@@ -1011,9 +1015,9 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 				currentIndex = 0
 				MaxIndexLength = 0
 				currentPage = interaction.customId
-				StringToEmbed = bold("Level: "+ QueryCharacterInfo.Level + " - XP: " + QueryCharacterInfo.CurrentXP + "/1000")
-				+"\nGold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)).toFixed(2) + "/" + QueryCharacterInfo.MaxGold
-				+"\nStatus: " + QueryCharacterInfo.Status
+				StringToEmbed = "**Level: "+ QueryCharacterInfo.Level + " - XP: " + QueryCharacterInfo.CurrentXP + "/1000**"
+				+"\n**Gold: " + CalcedGoldSpent + "/" + QueryCharacterInfo.MaxGold +"**"
+				+"\n**Status: " + QueryCharacterInfo.Status +"**"
 			}
 			
 			{
@@ -1027,7 +1031,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			if (interaction.customId === 'fowardId' || 'backID' && interaction.customId !== 'characterinfo'){
 			switch(currentPage){
 				case"purchaselog":
-				StringToEmbed = bold("Gold: " + (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold.toFixed(2)) + "/" + QueryCharacterInfo.MaxGold)+
+				StringToEmbed = bold("Gold: " + CalcedGoldSpent + "/" + QueryCharacterInfo.MaxGold)+
 				"\n**Purchase Log:** " + PurchaseLogInfo.slice(currentIndex, currentIndex + 10 ).toString().replace(/,/g,"")
 				break
 				
