@@ -1783,7 +1783,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 					PurchaseDate = EuroDateFunc(PurchaseDate)
 					
 					if (PurchasedValue >= 0) {
-						RemainingGold  = QueryCharInfo.MaxGold - QueryCharInfo.SpentGold.toFixed(2)
+						RemainingGold  = (QueryCharInfo.MaxGold - QueryCharInfo.SpentGold).toFixed(2)
 						if (PurchasedValue <= RemainingGold){
 						var PurchaseEntry = [PurchaseDate,"Bought: ",PurchasedItem,PurchasedValue] //date,sold/bought,item,value.
 						QueryCharInfo.PurchaseLog.push(PurchaseEntry)
