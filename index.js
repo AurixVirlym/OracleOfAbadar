@@ -21,7 +21,10 @@ const DateOptions = {
 	month: "numeric",
 	year: "numeric",
   }
-
+const PlayerEmbedColor = "1ABC9C"
+const CharacterEmbedColor = "BC1A3A"
+const ConfirmEmbedColor = "F1C40F" 
+const ReportEmbedColor = "9B59B6"
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -592,7 +595,7 @@ client.on('interactionCreate', async interaction => {
 
 			  //player info embed
 				const InfoPlayerCharEmbed = new EmbedBuilder()
-				.setColor(0x0099FF)
+				.setColor(PlayerEmbedColor)
 				.setTitle(bold(PlayerName.username))
 				.setDescription(PlayerInfoSting+StringToEmbed)
 				.setTimestamp()
@@ -687,7 +690,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 		// Respond to interaction by updating message with new embed
 		await interaction.update({
 		  embeds: [new EmbedBuilder()
-			.setColor(0x0099FF)
+			.setColor(PlayerEmbedColor)
 			.setTitle(bold(PlayerName.username))
 			.setDescription(PlayerInfoSting+StringToEmbed)
 			.setTimestamp()
@@ -897,7 +900,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 					 QueryReportInfo = await ReportData.findOne({_id: IDtofind})
 
 				 if (QueryReportInfo !== null){
-					AssignedReportInfo.push("\n"+ EuroDateFunc(QueryReportInfo.RunDate) +" - "+ QueryReportInfo.Name + " - XP: "  + QueryReportInfo.XP)
+					AssignedReportInfo.push('\n' + index + ' - ' + EuroDateFunc(QueryReportInfo.RunDate) +" - "+ QueryReportInfo.Name + " - XP: "  + QueryReportInfo.XP)
 				 } else {
 					AssignedReportInfo.push("\n***ERR*** - Failed To Find Report: " + QueryCharacterInfo.AssignedReports[index])
 				 }
@@ -907,7 +910,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			 for (let index = 0; index < NumberOfPurchaseLogs; index++) {
 	 
 				let PLog = QueryCharacterInfo.PurchaseLog[index]
-				PurchaseLogInfo.push("\n"+ PLog[0] + " - " + PLog[1] + PLog[2] + " for " + PLog[3]+' gp.')
+				PurchaseLogInfo.push('\n' + index + ' - ' + PLog[0] + " - " + PLog[1] + PLog[2] + " for " + PLog[3]+' gp.')
 			
 				
 			}
@@ -915,7 +918,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			for (let index = 0; index < NumberOfApprovalLogs; index++) {
 	 
 				let ApprovalEntry = QueryCharacterInfo.ApprovalLog[index]
-				ApprovalLogInfo.push("\n"+ ApprovalEntry[0] + " - " + ApprovalEntry[1] + ApprovalEntry[2] + " by " + ApprovalEntry[3] + "/" + ApprovalEntry[4])
+				ApprovalLogInfo.push('\n' + index + ' - ' + ApprovalEntry[0] + " - " + ApprovalEntry[1] + ApprovalEntry[2] + " by " + ApprovalEntry[3] + "/" + ApprovalEntry[4])
 			
 				
 			}
@@ -928,7 +931,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 
 			  //char info embed
 				const InfoCharEmbed = new EmbedBuilder()
-				.setColor(0x0099FF)
+				.setColor(CharacterEmbedColor)
 				.setTitle(bold(DiscordNameToDisplay + QueryCharacterInfo.Name))
 				.setDescription(CharInfoSting)
 				.setTimestamp()
@@ -1051,7 +1054,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			// Respond to interaction by updating message with new embed
 			await interaction.update({
 				embeds: [new EmbedBuilder()
-				  .setColor(0x0099FF)
+				  .setColor(CharacterEmbedColor)
 				  .setTitle(bold(DiscordNameToDisplay + QueryCharacterInfo.Name))
 				  .setDescription(StringToEmbed)
 				  .setTimestamp()
@@ -1065,7 +1068,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 
 				await interaction.update({
 					embeds: [new EmbedBuilder()
-					  .setColor(0x0099FF)
+					  .setColor(CharacterEmbedColor)
 					  .setTitle(bold(DiscordNameToDisplay + QueryCharacterInfo.Name))
 					  .setDescription(StringToEmbed)
 					  .setTimestamp()
@@ -1140,7 +1143,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			EmbedString = 'Do you wish to make the SR "**' + ReportName + '**" - ran by "**' + PlayerDiscordMention + '**"?'  
 				
 			var ConfirmEmbed = new EmbedBuilder()
-			.setColor(0x0099FF)
+			.setColor(ConfirmEmbedColor)
 			.setDescription(EmbedString)
 			.setTimestamp()
 			.setFooter({ text: 'Absalom Living Campaign'});
@@ -1294,7 +1297,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 		EmbedString = 'Do you wish to add the following characters to SR "**' + ReportName + '**"?\n' + CharsFromMessage
 				
 		var ConfirmEmbed = new EmbedBuilder()
-		.setColor(0x0099FF)
+		.setColor(ConfirmEmbedColor)
 		.setDescription(EmbedString)
 		.setTimestamp()
 		.setFooter({ text: 'Absalom Living Campaign'});
@@ -1366,7 +1369,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 		EmbedString = 'Do you wish to publish the SR "**' + ReportName + '**"?'
 				
 				var ConfirmEmbed = new EmbedBuilder()
-				.setColor(0x0099FF)
+				.setColor(ConfirmEmbedColor)
 				.setDescription(EmbedString)
 				.setTimestamp()
 				.setFooter({ text: 'Absalom Living Campaign'});
@@ -1533,7 +1536,7 @@ embedMessage = await interaction.reply({ embeds: [InfoPlayerCharEmbed], componen
 			)
 			
 			const embed = new EmbedBuilder()
-			.setColor(0x0099FF)
+			.setColor(ReportEmbedColor)
 			.setTitle(SRtitle)
 			.setDescription(QueryReportInfo.Description)
 			.setTimestamp()
@@ -1581,7 +1584,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 		// Respond to interaction by updating message with new embed
 		await interaction.update({
 		  embeds: [new EmbedBuilder()
-			.setColor(0x0099FF)
+			.setColor(ReportEmbedColor)
 			.setTitle(SRtitle)
 			.setDescription(CharInReportDisplay)
 			.setTimestamp()
@@ -1631,7 +1634,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 			EmbedString = 'Do you wish to add the unassigned report "**' + ReportName + '**" to **"' + CharName +'**"?'
 				
 		var ConfirmEmbed = new EmbedBuilder()
-		.setColor(0x0099FF)
+		.setColor(ConfirmEmbedColor)
 		.setDescription(EmbedString)
 		.setTimestamp()
 		.setFooter({ text: 'Absalom Living Campaign'});
@@ -1752,7 +1755,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 				EmbedString = 'Do you wish to buy/sell "**' + PurchasedItem + '**"' + ' for **' + PurchasedValue + ' gp** on "**' + CharName + '**"'
 				
 				var ConfirmEmbed = new EmbedBuilder()
-				.setColor(0x0099FF)
+				.setColor(ConfirmEmbedColor)
 				.setDescription(EmbedString)
 				.setTimestamp()
 				.setFooter({ text: 'Absalom Living Campaign'});
@@ -1964,7 +1967,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 				EmbedString = 'Do you wish to approve of "**' + ApprovalLine + '**" for "**' + CharName + '**"?'
 				
 		var ConfirmEmbed = new EmbedBuilder()
-		.setColor(0x0099FF)
+		.setColor(ConfirmEmbedColor)
 		.setDescription(EmbedString)
 		.setTimestamp()
 		.setFooter({ text: 'Absalom Living Campaign'});
@@ -2123,7 +2126,7 @@ embedMessage = await interaction.reply({ embeds: [embed], components: [rowdesc]}
 				EmbedString = 'You wish to rename "**' + OldCharName + '**" to "**' + NewCharName +'**"?'
 				
 				var ConfirmEmbed = new EmbedBuilder()
-				.setColor(0x0099FF)
+				.setColor(ConfirmEmbedColor)
 				.setDescription(EmbedString)
 				.setTimestamp()
 				.setFooter({ text: 'Absalom Living Campaign'});
