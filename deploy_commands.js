@@ -139,8 +139,80 @@ const commands = [
 	.addStringOption(option => option.setName('approval').setDescription('approval entry to add.').setMinLength(1).setMaxLength(120).setRequired(true)),
 
 	new SlashCommandBuilder().setName('returnallplayers')
-	.setDescription("Test Command.")
+	.setDescription("Test Command."),
 	
+	new SlashCommandBuilder().setName('createcardset')
+	.setDescription("Test Command."),
+
+	new SlashCommandBuilder().setName('lastplayed')
+	.setDescription("Test Command."),
+
+	new SlashCommandBuilder().setName('updateallcharactersforcards')
+	.setDescription("Test Command."),
+
+	new SlashCommandBuilder().setName('updateallplayersforcards')
+	.setDescription("Test Command."),
+
+	new SlashCommandBuilder().setName('pullcard')
+	.setDescription("Gives you one card. Usable once per day or if you have 10 Recycle Points. Daily pull is used before points."),
+	
+	new SlashCommandBuilder().setName('infocard')
+	.setDescription('Gives info on a card.')
+	.addStringOption(option => option.setName('card').setDescription('Card Tag').setMinLength(5).setRequired(true)),
+
+	new SlashCommandBuilder().setName('tradecards')
+	.setDescription('Trade one card for another with another player.')
+	.addStringOption(option => option.setName('mention').setDescription('Mention of the player you wish to trade with.').setRequired(true))
+	.addStringOption(option => option.setName('offer').setDescription('The Card Tag of the card you wish to give').setMinLength(5).setRequired(true))
+	.addStringOption(option => option.setName('want').setDescription('The Card Tag of the card you wish to recieve').setMinLength(5).setRequired(true)),
+
+	new SlashCommandBuilder().setName('giftcard')
+	.setDescription('Gift one card to another player')
+	.addStringOption(option => option.setName('mention').setDescription('Mention of the player you wish to trade with.').setRequired(true))
+	.addStringOption(option => option.setName('giftcard').setDescription('The Card Tag of the card you wish to gift').setMinLength(5).setRequired(true)),
+
+	new SlashCommandBuilder().setName('recyclecards')
+	.setDescription('Gives info on a card.')
+	.addStringOption(option => option.setName('recyclecard').setDescription('The Card Tag of the card you wish to recycle.').setMinLength(5).setRequired(true))
+	.addNumberOption(option => option.setName('quantity').setDescription('The quantity of cards you wish to recycle.').setRequired(true)),
+
+
+
+
+	new SlashCommandBuilder().setName('characterdetails')
+	.setDescription('Changes details of a character that are not required and are considered fluff.')
+	.addStringOption(option => option.setName('character').setDescription('Character Name').setMinLength(1).setMaxLength(30).setRequired(true))
+	.addStringOption(option => option.setName('class').setDescription('Class of the character.').addChoices(
+		{ name: 'Alchemist', value: 'Alchemist' },
+		{ name: 'Barbarian', value: 'Barbarian' },
+		{ name: 'Bard', value: 'Bard' },
+		{ name: 'Champion', value: 'Champion' },
+		{ name: 'Druid', value: 'Druid' },
+		{ name: 'Fighter', value: 'Fighter' },
+		{ name: 'Inventor', value: 'Inventor' },
+		{ name: 'Investigator', value: 'Investigator' },
+		{ name: 'Magus', value: 'Magus' },
+		{ name: 'Monk ', value: 'Monk ' },
+		{ name: 'Oracle', value: 'Oracle' },
+		{ name: 'Psychic', value: 'Psychic' },
+		{ name: 'Ranger', value: 'Ranger' },
+		{ name: 'Rogue', value: 'Rogue' },
+		{ name: 'Sorcerer', value: 'Sorcerer' },
+		{ name: 'Summoner', value: 'Summoner' },
+		{ name: 'Swashbuckler', value: 'Swashbuckler' },
+		{ name: 'Thaumaturge', value: 'Thaumaturge' },
+		{ name: 'Witch', value: 'Witch' },
+		{ name: 'Wizard', value: 'Wizard' },
+		))
+	.addStringOption(option => option.setName('type').setDescription('Type of the character.').addChoices(
+		{ name: 'Striker', value: 'Striker' },
+		{ name: 'Artillery ', value: 'Artillery ' },
+		{ name: 'Support', value: 'Support' },
+		{ name: 'Controller', value: 'Controller' },))
+	.addStringOption(option => option.setName('description').setDescription('A little fluffy description for your character no longer than a tweet.').setMinLength(1).setMaxLength(240))
+	.addStringOption(option => option.setName('image').setDescription('An image to represent your character').setMaxLength(300))
+	.addBooleanOption(option => option.setName('allow').setDescription('An image to represent your character'))
+	,
 	
 ]
 .map(command => command.toJSON());
