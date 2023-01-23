@@ -1,0 +1,72 @@
+const { SlashCommandBuilder, Routes } = require('discord.js');
+const {
+	RoleBotAdmin,
+	RoleStaff,
+	PlayerData,
+} = require('../constants.js');
+
+
+
+module.exports = {
+	data: new SlashCommandBuilder().setName('changeslots')
+    .setDescription('Set a players character slot limit to the given value.')
+    .addUserOption(option => option.setName('mention').setDescription('Player discord @mention.').setRequired(true))
+    .addNumberOption(option => option.setName('slots').setDescription('Number of character slots.').setMinValue(0).setMaxValue(666).setRequired(true)),
+
+	async execute(interaction,client) {
+
+        await interaction.deferReply();
+
+        if (interaction.member.roles.cache.some(r => [RoleBotAdmin, RoleStaff].includes(r.name))) {}
+		else {
+			interaction.editReply({ content: 'You lack the role(s) to use this command.' });
+			return;
+		}
+
+
+		var NewSlots = interaction.options.getNumber('slots');
+		var PlayerDiscordMention = interaction.options.getUser('mention');
+
+		if (PlayerDiscordMention == null || NewSlots == null) {
+			await interaction.editReply({ content: 'Not all inputs given.' });
+			return;
+		}
+		if (typeof NewSlots != Number && NewSlots < 0) {
+			await interaction.editReply({ content: 'Invalid value for slots' });
+			return;
+		}
+
+
+		var PlayerDiscordID = PlayerDiscordMention.id
+		var PlayerDiscordMention = '<@' + PlayerDiscordID + '>'
+		
+
+		try {
+			var PlayerName = await client.users.fetch(PlayerDiscordID);
+		}
+		catch (error) {
+			await interaction.editReply({ content: 'No such player in database or other error.' });
+			return;
+		}
+
+		if (typeof PlayerName != undefined) {
+			var QueryPlayerInfo = await PlayerData.findOne({ DiscordId: PlayerDiscordMention });
+		}
+		else {
+			await interaction.editReply({ content: 'Incorrect Player Mention' });
+			return;
+		}
+
+		if (QueryPlayerInfo != null) {
+			const OldSlots = QueryPlayerInfo.CharacterSlots;
+			QueryPlayerInfo.CharacterSlots = NewSlots;
+			await QueryPlayerInfo.save();
+			await interaction.editReply({ content: PlayerDiscordMention + ' now has ' + NewSlots + ' character slots instead of ' + OldSlots + '.' });
+		}
+		else {interaction.editReply({ content: 'Did not find player entry' });}
+		return;
+
+
+
+    }
+}
