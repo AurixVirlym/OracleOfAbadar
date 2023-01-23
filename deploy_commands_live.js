@@ -162,7 +162,7 @@ const commands = [
 		.addUserOption(option => option.setName('mention').setDescription('Mention of the player you wish to trade with.').setRequired(true))
 		.addStringOption(option => option.setName('giftcard').setDescription('The Card Tag of the card you wish to gift').setMinLength(5).setRequired(true)),
 
-	new SlashCommandBuilder().setName('recyclecards')
+		new SlashCommandBuilder().setName('recyclecards')
 		.setDescription('Gives info on a card.')
 		.addStringOption(option => option.setName('recyclecard').setDescription('The Card Tag of the card you wish to recycle.').setMinLength(5).setRequired(true))
 		.addNumberOption(option => option.setName('quantity').setDescription('The quantity of cards you wish to recycle.').setRequired(true)),

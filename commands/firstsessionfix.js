@@ -3,6 +3,7 @@ const {
 	CharacterData,
 	PlayerData,
 	ReportData,
+    RoleBotAdmin,
 } = require('../constants.js');
 
 
@@ -56,6 +57,7 @@ module.exports = {
             console.log("Updated: " + QueryPlayerInfo.DiscordId)
 
         }
+        console.log("Done!")
 
 
     }

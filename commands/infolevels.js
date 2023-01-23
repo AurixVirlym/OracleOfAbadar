@@ -20,8 +20,6 @@ module.exports = {
 
 		if (interaction.member.roles.cache.some(r => [RoleBotAdmin, RoleStaff, RolePlayerGM].includes(r.name))) {
 
-		
-
 			CharacterLevelsUnclean = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 			TotalCharacters = 0;
 			TotalLevels = 0;

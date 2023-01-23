@@ -157,24 +157,24 @@ module.exports = {
 			collector.on('collect', async interaction => {
 
 				if (interaction.customId === 'sessionreports') {
-					console.log(interaction.customId)
+		
 					currentIndex = 0;
 					MaxIndexLength = AssignedReportInfo.length;
 					currentPage = interaction.customId;
 					StringToEmbed = bold('Level: ' + QueryCharacterInfo.Level + ' - XP: ' + QueryCharacterInfo.CurrentXP + '/1000')
             + '\n**Session Reports** ' + AssignedReportInfo.slice(currentIndex, currentIndex + 10).toString().replace(/,/g, '');
-			console.log(StringToEmbed)
+
 				}
 
 
 				if (interaction.customId === 'purchaselog') {
-					console.log(interaction.customId)
+
 					currentIndex = 0;
 					MaxIndexLength = PurchaseLogInfo.length;
 					currentPage = interaction.customId;
 					StringToEmbed = '**Gold: ' + CalcedGoldSpent + '/' + QueryCharacterInfo.MaxGold + '**' +
             '\n**Purchase Log:** ' + PurchaseLogInfo.slice(currentIndex, currentIndex + 10).toString().replace(/,/g, '');
-			console.log(StringToEmbed)
+	
 				}
 
 				if (interaction.customId === 'approvallog') {
@@ -193,7 +193,7 @@ module.exports = {
             + '\n**Status: ' + QueryCharacterInfo.Status + '**';
 				}
 
-				console.log(interaction.customId)
+		
 
 				{
 
