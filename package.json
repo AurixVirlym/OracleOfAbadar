@@ -16,5 +16,8 @@
     "discordjs-button-pagination": "^1.0.7",
     "image-url-validator": "^1.0.4",
     "mongoose": "^6.5.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.32.0"
   }
 }
