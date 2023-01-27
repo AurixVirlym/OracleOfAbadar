@@ -4,6 +4,9 @@ const {
 	PlayerData,
 } = require('../constants.js');
 
+const isImageURL = require('image-url-validator').default;
+
+
 module.exports = {
 	data: new SlashCommandBuilder().setName('characterdetails')
     .setDescription('Changes details of a character that are not required and are considered fluff.')
@@ -20,7 +23,7 @@ module.exports = {
         { name: 'Inventor', value: 'Inventor' },
         { name: 'Investigator', value: 'Investigator' },
         { name: 'Magus', value: 'Magus' },
-        { name: 'Monk ', value: 'Monk' },
+        { name: 'Monk', value: 'Monk' },
         { name: 'Oracle', value: 'Oracle' },
         { name: 'Psychic', value: 'Psychic' },
         { name: 'Ranger', value: 'Ranger' },
@@ -105,7 +108,7 @@ module.exports = {
 			StringToReply = 'No character with that name found, try again.';
 		}
 
-		await iinteraction.editReply({
+		await interaction.editReply({
 			content: StringToReply,
 		});
 

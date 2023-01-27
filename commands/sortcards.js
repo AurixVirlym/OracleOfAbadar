@@ -32,7 +32,7 @@ module.exports = {
         let QueryPlayerInfo = await PlayerData.findOne({ DiscordId: PlayerDiscordMention });
 
 		if (QueryPlayerInfo != null) {
-            QueryPlayerInfo.SortCards = SortType
+            QueryPlayerInfo.CardSort = SortType
 			SortCards(QueryPlayerInfo)
             QueryPlayerInfo.save();
             await interaction.editReply({ content: 'Card Collection sorted.' });

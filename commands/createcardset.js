@@ -5,6 +5,7 @@ const {
 	CardData,
 	RandomRange,
 } = require('../constants.js');
+const isImageURL = require('image-url-validator').default;
 
 
 
@@ -38,8 +39,10 @@ module.exports = {
 			CardImage:{ $exists: true, $ne: 'Not Set.' },
 			CardType:{ $exists: true, $ne: 'Not Set.' },
 			Status: 'Approved' }).then((CharacterDatas) => {
-			CharacterDatas.forEach((CharacterData) => {
+			CharacterDatas.forEach(async (CharacterData) => {
 				const CardTier = Math.ceil(CharacterData.Level / 2);
+
+				if (isImageURL(CharacterData.CardImage)) {
 
 				const Card = {
 					Name: CharacterData.Name,
@@ -52,6 +55,7 @@ module.exports = {
 					Description: CharacterData.CardDescription,
 					Type: CharacterData.CardType,
 					Special: false,
+					Tag: "TEST"
 				};
 
 				switch (CardTier) {
@@ -82,6 +86,7 @@ module.exports = {
 				AllReadyCards[0].push(Card);
 				AllReadyCards[CardTier].push(NumberIndex);
 				NumberIndex += 1;
+			}
 			});
 		});
 
@@ -101,16 +106,17 @@ module.exports = {
 			CardPoolSize: AllReadyCards[0].length,
 			Name: 'Test Card Pool',
 			Icon: 'https://cdn.discordapp.com/attachments/1006650762035728424/1055186205752434791/Oracle.webp',
-			Tag: 'BETA',
+			Tag: 'TEST',
 			Created: Date(),
 			Active: false,
 			Specials: [SpecialOne, SpecialTwo],
+			Eternals: []
 		};
 
 		let data = new CardData(CardSet);
 		await data.save();
 
-		await interaction.reply({
+		await interaction.editReply({
 			content: 'NEW CARD SET MADED', embeds: [], components: [,] });
             return;
 

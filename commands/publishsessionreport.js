@@ -9,6 +9,7 @@ const {
 	ReportData,
 	PublishSR,
     ConfirmRow,
+	
 } = require('../constants.js');
 
 
@@ -70,14 +71,15 @@ module.exports = {
 					if (QueryReportInfo.SSR === true) {
 						if (interaction.member.roles.cache.some(r => [RoleBotAdmin, RoleStaff].includes(r.name))) {}
 						else {
-							interaction.update({ content: 'You lack the role(s) to modify this SSR.', embeds: [], components: [] });
+							await interaction.update({ content: 'You lack the role(s) to modify this SSR.', embeds: [], components: [] });
 							collector.stop();
 							break;
 
 						}
 					}
-                    await interaction.deferReply();
-					PublishSR(QueryReportInfo, interaction);
+					await interaction.deferUpdate();
+					EmbedString = await PublishSR(QueryReportInfo, interaction);
+					await interaction.editReply({ content: EmbedString, embeds: [], components: [] });
 					collector.stop();
 
 

@@ -7,6 +7,7 @@ const {
 	CardData,
 	GenCardEmbed,
     ConfirmRow,
+	SortCards,
 } = require('../constants.js');
 
 
@@ -87,6 +88,10 @@ module.exports = {
 				switch (interaction.customId) {
 
 				case 'yes':
+
+				QueryGifteeInfo = await PlayerData.findOne({ DiscordId: GifteeDiscordMention });
+				QueryGiverInfo = await PlayerData.findOne({ DiscordId: GiverDiscordMention });
+
 					let GiverCardOnGifteeList = QueryGifteeInfo.CardCollection.findIndex(item => item.CardTag == GiverCard);
 
 
@@ -110,9 +115,12 @@ module.exports = {
 					QueryGiverInfo.CardNumber -= 1;
 					QueryGifteeInfo.CardNumber += 1;
 
+					
+					QueryGifteeInfo = SortCards(QueryGifteeInfo)
 					QueryGifteeInfo.markModified('CardCollection');
 					await QueryGifteeInfo.save();
 
+					QueryGiverInfo = SortCards(QueryGiverInfo)
 					QueryGiverInfo.markModified('CardCollection');
 					await QueryGiverInfo.save();
 

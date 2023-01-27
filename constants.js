@@ -34,6 +34,7 @@ const CardSchema = new mongoose.Schema({
 	Created: Date,
 	Active: Boolean,
 	Specials: Array,
+	Eternals: Array,
 }, { collection: 'Cards' });
 
 
@@ -55,6 +56,7 @@ const PlayerSchema = new mongoose.Schema({
 	CardNumber: Number,
 	CardSort: String,
 	FirstSR: Boolean,
+	EternalCards: Number,
 
 
 }, { collection: 'Players' });
@@ -141,37 +143,49 @@ function EuroDateFunc(ToFormatDate) {
 
 
 function GenCardEmbed(Card, CardSet) {
+	let CardTitle;
 	if (Card.Special === true) {
 		CardEmbedColour = 0xF1C40F;
-		var CardTitle = bold(':star:' + Card.Name + ' - ' + CardSet.Tag + Card.CID);
+		CardTitle = bold(':star:' + Card.Name + ' - ' + CardSet.Tag + Card.CID);
 	}
 	else {
 		switch (Card.Rarity) {
 		case 'Untrained':
 			CardEmbedColour = 'a2decc';
+			CardTitle = bold(Card.Name + ' - ' + CardSet.Tag + Card.CID);
 			break;
 
 		case 'Trained':
 			CardEmbedColour = '1abc9c';
+			CardTitle = bold(Card.Name + ' - ' + CardSet.Tag + Card.CID);
 			break;
 
 		case 'Expert':
 			CardEmbedColour = '217965';
+			CardTitle = bold(Card.Name + ' - ' + CardSet.Tag + Card.CID);
 			break;
 
 		case 'Master':
 			CardEmbedColour = '193d33';
+			CardTitle = bold(Card.Name + ' - ' + CardSet.Tag + Card.CID);
 			break;
 
 		case 'Legendary':
 			CardEmbedColour = '000000';
+			CardTitle = bold(Card.Name + ' - ' + CardSet.Tag + Card.CID);
+			break;
+
+		case 'Eternal':
+			CardEmbedColour = 'E91E63';
+			CardTitle = bold(':star:' + Card.Name + ' - ' + CardSet.Tag + Card.CID + ':star:');
 			break;
 
 		default:
 			CardEmbedColour = 'aaa9ad';
+			CardTitle = bold(Card.Name + ' - ' + CardSet.Tag + Card.CID);
 			break;
 		}
-		var CardTitle = bold(Card.Name + ' - ' + CardSet.Tag + Card.CID);
+		
 	}
 
 
@@ -400,8 +414,7 @@ async function PublishSR(QueryReportInfo, interaction) {
 
 			}
 			else {
-				await interaction.update({ content: 'No GM found on Report.' });
-				return;
+				return 'No GM found on Report.'
 			}
 
 
@@ -460,8 +473,8 @@ async function PublishSR(QueryReportInfo, interaction) {
 	}
 
 
-	await interaction.editReply({ content: StringToReply, embeds: [], components: [] });
-	return
+	
+	return StringToReply
 }
 
 function AutoCalcSlots(QueryPlayerInfo) {
@@ -469,7 +482,7 @@ function AutoCalcSlots(QueryPlayerInfo) {
 	let MaxSlots = 1
 
 	if (QueryPlayerInfo.TotalXP <= 8000){
-		MaxSlots = Math.floor(QueryPlayerInfo.TotalXP / 2000)
+		MaxSlots += Math.floor(QueryPlayerInfo.TotalXP / 2000)
 	} else
 
 	{

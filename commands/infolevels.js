@@ -50,7 +50,7 @@ module.exports = {
 				.setTimestamp()
 				.setFooter({ text: 'Absalom Living Campaign' });
 
-			let embedMessage = await interaction.update({ embeds: [levelembed] });
+			await interaction.editReply({ embeds: [levelembed] });
 
 		}
 

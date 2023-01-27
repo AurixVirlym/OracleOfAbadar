@@ -19,7 +19,7 @@ module.exports = {
 
 
 		let InfoSetQuery = await CardData.findOne({
-			Tag: CardTag, Active: true,
+			Tag: CardTag
 		});
 
 

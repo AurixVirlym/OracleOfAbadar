@@ -42,16 +42,16 @@ module.exports = {
 
 		EmbedString = 'Do you wish to buy/sell "**' + PurchasedItem + '**"' + ' for **' + PurchasedValue + ' gp** on "**' + CharName + '**"';
 
-		var ConfirmEmbed = new EmbedBuilder()
+		let ConfirmEmbed = new EmbedBuilder()
 			.setColor(ConfirmEmbedColor)
 			.setDescription(EmbedString)
 			.setTimestamp()
 			.setFooter({ text: 'Absalom Living Campaign' });
 
-		embedMessage = interaction.editReply({ embeds: [ConfirmEmbed], components: [ConfirmRow] });
+		embedMessage = await interaction.editReply({ embeds: [ConfirmEmbed], components: [ConfirmRow] });
 
 
-		var collector = embedMessage.createMessageComponentCollector({
+		let collector = embedMessage.createMessageComponentCollector({
 			filter: ({ user }) => user.id === interaction.user.id, time: CollecterTimeout,
 		});
 

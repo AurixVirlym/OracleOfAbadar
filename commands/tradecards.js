@@ -5,6 +5,7 @@ const {
 	ConfirmEmbedColor,
 	PlayerData,
     ConfirmRow,
+	SortCards,
 } = require('../constants.js');
 
 
@@ -132,6 +133,9 @@ module.exports = {
 						switch (interaction.customId) {
 						case 'yes':
 
+						QueryBuyeeInfo = await PlayerData.findOne({ DiscordId: BuyeeDiscordMention });
+						QueryTraderInfo = await PlayerData.findOne({ DiscordId: TraderDiscordMention });
+
 						BuyeeCardOnList = QueryBuyeeInfo.CardCollection.findIndex(item => item.CardTag == BuyeeCard);
 						TraderCardOnList = QueryTraderInfo.CardCollection.findIndex(item => item.CardTag == TraderCard);
 
@@ -196,8 +200,12 @@ module.exports = {
 								QueryTraderInfo.CardCollection.splice(TraderCardOnList, 1);
 							}
 
+							
+							QueryBuyeeInfo = SortCards(QueryBuyeeInfo)
 							QueryBuyeeInfo.markModified('CardCollection.[BuyeeCardOnList]');
 							await QueryBuyeeInfo.save();
+
+							QueryTraderInfo = SortCards(QueryTraderInfo)
 							QueryTraderInfo.markModified('CardCollection.[TraderCardOnList]');
 							await QueryTraderInfo.save();
 

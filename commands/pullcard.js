@@ -79,32 +79,109 @@ module.exports = {
 				{PullTier = 2;}
 				else {PullTier = 1;} // untrained roll.
 
-
-				let InfoSetQuery = await CardData.findOne({
+				let CardsPullable = [[],[],[],[],[],[],[],[]]
+				let CardCIDAdjust = 0
+				
+				await CardData.find({
 					Active: true,
-				});
+				}).then((SetDatas) => {
+					SetDatas.forEach((SetData) => {
+						console.log(SetData.Tag)
+						
+						for (const card of SetData.CardPool[0]) {
+							card.Tag = SetData.Tag
+						}
 
 
-				if (InfoSetQuery !== undefined && InfoSetQuery !== null) {
+
+						if (CardCIDAdjust != 0){
+							
+							
+							for (let CardTier = 1; CardTier < 5; CardTier++) {
+
+								console.log(SetData.CardPool[CardTier].length)
+
+								for (let index = 0; index < SetData.CardPool[CardTier].length; index++) {
+								
+									SetData.CardPool[CardTier][index] += CardCIDAdjust
+								}
+								
+							}
+
+							for (let index = 0; index < SetData.Specials.length; index++) {
+								
+								SetData.Specials[index] += CardCIDAdjust
+							}
+						
+							for (let index = 0; index < SetData.Eternals.length; index++) {
+								
+								SetData.Eternals[index] += CardCIDAdjust
+							}
+							
+
+							
+						}
+
+						for (let CardTier = 0; CardTier < 5; CardTier++) {
+							if (SetData.CardPool[CardTier].length !== 0)
+						{
+							CardsPullable[CardTier] = CardsPullable[CardTier].concat(SetData.CardPool[CardTier])
+						}
+						}
+						CardsPullable[6] = CardsPullable[6].concat(SetData.Specials)
+						CardsPullable[7] = CardsPullable[7].concat(SetData.Eternals)
+					
+						CardCIDAdjust += SetData.CardPool[0].length
+						console.log(CardCIDAdjust)
+
+					})
+				})
+				
+				const fs = require('fs');
+				
+				fs.writeFile("./save.txt", JSON.stringify(CardsPullable[1]), 'utf8', function (err) {
+					if (err) {
+						return console.log(err);
+					}
+				
+					console.log("The file was saved!");
+				})
+
+				
+
+				if (typeof CardsPullable !== undefined && CardsPullable !== null) {
 					let CardPulled;
 
 
 					while (CardPulled === undefined) {
 
+						if (PullTier === 7) {
+							SizeOfPool = CardsPullable[7].length;
+							if (SizeOfPool === 0) {
+								Message = await interaction.editReply({ content: 'No Eternals cards to Pull found, scream at Danni.' });
+								break;
+							}
+
+							CIDCardPulled = CardsPullable[7][RandomRange(0, SizeOfPool - 1)];
+
+						} else
+
 
 						if (PullTier === 6) {
-							SizeOfPool = InfoSetQuery.Specials.length;
+							SizeOfPool = CardsPullable[6].length;
 							if (SizeOfPool === 0) {
 								Message = await interaction.editReply({ content: 'No Special cards to Pull found, scream at Danni.' });
 								break;
 							}
 
-							CIDCardPulled = InfoSetQuery.Specials[RandomRange(0, SizeOfPool - 1)];
+							CIDCardPulled = CardsPullable[6][RandomRange(0, SizeOfPool - 1)];
 
 						}
-						else {
+						else { 
+							
+						
 
-							SizeOfPool = InfoSetQuery.CardPool[PullTier].length;
+							SizeOfPool = CardsPullable[PullTier].length;
 
 							if (SizeOfPool === 0) {
 								PullTier -= 1;
@@ -113,11 +190,15 @@ module.exports = {
 									break;
 								}
 							}
-							CIDCardPulled = InfoSetQuery.CardPool[PullTier][RandomRange(0, SizeOfPool - 1)];
+							CIDCardPulled = CardsPullable[PullTier][RandomRange(0, SizeOfPool - 1)];
+							
+					
 						}
 
-						CardPulled = InfoSetQuery.CardPool[0][CIDCardPulled];
+						CardPulled = CardsPullable[0][CIDCardPulled];
 
+
+						let InfoSetQuery = await CardData.findOne({ Tag: CardPulled.Tag })
 
 						let CardEmbed = GenCardEmbed(CardPulled, InfoSetQuery);
 						let embedMessage = await interaction.editReply({ content: 'You have **' + String(QueryPlayerInfo.RecycledPoints) + '** Recycle Points left and you pulled: ', embeds: [CardEmbed] });

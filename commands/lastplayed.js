@@ -31,7 +31,7 @@ module.exports = {
 
         if (interaction.member.roles.cache.some(r => [RoleBotAdmin, RoleStaff, RolePlayerGM].includes(r.name))) {}
 		else {
-			await nteraction.editReply({ content: 'You lack the role(s) to use this command.' });
+			await interaction.editReply({ content: 'You lack the role(s) to use this command.' });
 			return;
 		}
 		

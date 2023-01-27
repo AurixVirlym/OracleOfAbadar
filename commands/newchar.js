@@ -5,6 +5,7 @@ const {
 	PlayerData,
     RoleBotAdmin,
 	RoleStaff,
+	AutoCalcSlots,
 } = require('../constants.js');
 
 

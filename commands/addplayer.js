@@ -69,6 +69,7 @@ module.exports = {
 				LastPull: new Date(),
 				RecycledPoints: 30,
                 FirstSR: false,
+				EternalCards: 0,
 
 			};
 
