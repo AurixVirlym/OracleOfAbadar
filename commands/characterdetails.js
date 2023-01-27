@@ -10,7 +10,7 @@ const isImageURL = require('image-url-validator').default;
 module.exports = {
 	data: new SlashCommandBuilder().setName('characterdetails')
     .setDescription('Changes details of a character that are not required and are considered fluff.')
-    .addStringOption(option => option.setName('character').setDescription('Character Name').setMinLength(1).setMaxLength(30).setRequired(true))
+	.addStringOption(option => option.setName('character').setDescription('Character Name').setMinLength(1).setMaxLength(30).setRequired(true))
     .addStringOption(option => option.setName('class').setDescription('Class of the character.').addChoices(
         { name: 'Alchemist', value: 'Alchemist' },
         { name: 'Barbarian', value: 'Barbarian' },

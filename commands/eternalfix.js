@@ -1,8 +1,6 @@
 const { SlashCommandBuilder, Routes } = require('discord.js');
 const {
-	CharacterData,
 	PlayerData,
-	ReportData,
     RoleBotAdmin,
 } = require('../constants.js');
 
