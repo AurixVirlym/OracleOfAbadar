@@ -13,6 +13,7 @@ module.exports = {
         { name: 'Qty, Bottom to Top', value: 'QBtoT' },
         { name: 'By Card Tag', value: 'tag' },
         { name: 'By Character Name', value: 'CharName' },
+        { name: 'By Character Level', value: 'lvl' },
     )),
 	async execute(interaction,client) {
 
@@ -22,7 +23,7 @@ module.exports = {
 
 		let PlayerDiscordID = interaction.user.id;
 		let PlayerDiscordMention = '<@' + PlayerDiscordID + '>';
-        let PlayerName = await client.users.fetch(PlayerDiscordID);
+        let PlayerName = interaction.user
 
 
 		if (typeof PlayerName === undefined) {

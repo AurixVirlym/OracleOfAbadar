@@ -41,15 +41,17 @@ module.exports = {
 			{ name: 'Swashbuckler', value: 0 },
 			{ name: 'Thaumaturge', value: 0 },
 			{ name: 'Witch', value: 0 },
-			{ name: 'Wizard', value: 0 }]
+			{ name: 'Wizard', value: 0 },
+			{ name: "Not Set.", value: 0},]
 			TotalCharacters = 0;
 
 			await CharacterData.find({
 				Status: 'Approved' }).then((CharacterDatas) => {
 				CharacterDatas.forEach((CharacterData) => {
 
-					if (CharacterData.Status == "Approved" && CharacterData.CardClass != "Not Set."){
+					if (CharacterData.Status == "Approved"){
 						IsCharList = CharacterClasses.findIndex(item => item.name === CharacterData.CardClass);
+						TotalCharacters += 1
 					}
 
 					
@@ -69,7 +71,7 @@ module.exports = {
 
 			const levelembed = new EmbedBuilder()
 				.setColor(ReportEmbedColor)
-				.setTitle('Info on Character Classes')
+				.setTitle('Info on Character Classes, total: ' + TotalCharacters)
 				.setDescription(StringToSend)
 				.setTimestamp()
 				.setFooter({ text: 'Absalom Living Campaign' });

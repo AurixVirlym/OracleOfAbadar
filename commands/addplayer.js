@@ -29,7 +29,7 @@ module.exports = {
 			var PlayerName = await client.users.fetch(PlayerDiscordID);
 		}
 		catch (error) {
-			await iinteraction.editReply({ content: 'No such player in database or other error.' });
+			await interaction.editReply({ content: 'No such player in database or other error.' });
 			return;
 		}
 
@@ -67,9 +67,13 @@ module.exports = {
 				CardRating: 0,
 				CardSort: "tag",
 				LastPull: new Date(),
-				RecycledPoints: 30,
+				RecycledPoints: 50,
                 FirstSR: false,
 				EternalCards: 0,
+				WeeklyExpedition: new Date('August 21, 2021 16:45:30'),
+				ExpeditionTier: "Untrained",
+				ExpeditionPasses: 1,
+				ExpeditionLucky: 10
 
 			};
 

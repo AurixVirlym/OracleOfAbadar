@@ -19,7 +19,7 @@ module.exports = {
         
         if (interaction.member.roles.cache.some(r => [RoleBotAdmin].includes(r.name))) {}
 		else {
-			await interaction.reply({ content: 'You lack the role(s) to use this command.' });
+			await interaction.editReply({ content: 'You lack the role(s) to use this command.' });
 			return;
 		}
 
@@ -104,9 +104,9 @@ module.exports = {
 		CardSet = {
 			CardPool: AllReadyCards,
 			CardPoolSize: AllReadyCards[0].length,
-			Name: 'Test Card Pool',
+			Name: 'NEW CARD Card Pool',
 			Icon: 'https://cdn.discordapp.com/attachments/1006650762035728424/1055186205752434791/Oracle.webp',
-			Tag: 'TEST',
+			Tag: 'NEEW',
 			Created: Date(),
 			Active: false,
 			Specials: [SpecialOne, SpecialTwo],
@@ -117,7 +117,7 @@ module.exports = {
 		await data.save();
 
 		await interaction.editReply({
-			content: 'NEW CARD SET MADED', embeds: [], components: [,] });
+			content: 'NEW CARD SET MADED'});
             return;
 
 

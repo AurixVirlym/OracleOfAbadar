@@ -18,7 +18,8 @@ module.exports = {
 	data: new SlashCommandBuilder().setName('newsessionreport')
     .setDescription('Creates a new report with the given name, name must be unique and a mention of the GM is required.')
     .addStringOption(option => option.setName('reportname').setDescription('Report name, must be unique, case sensitive.').setMinLength(1).setMaxLength(60).setRequired(true))
-    .addStringOption(option => option.setName('gm').setDescription('Player discord @mention.').setRequired(true)),
+    .addUserOption(option => option.setName('gm').setDescription('Player discord @mention.').setRequired(true))
+	.addBooleanOption(option => option.setName('ssr').setDescription('Do you wish to make this an SSR?')),
 	async execute(interaction,client) {
 
         await interaction.deferReply();
@@ -30,8 +31,8 @@ module.exports = {
 		}
 		let StringToReply = 'ERR';
 		let GMstoReport = [];
-		let MakeSSR = false;
-		let PlayerDiscordMention = interaction.options.getString('gm');
+		let MakeSSR = interaction.options.getBoolean('ssr');
+		let PlayerDiscordMention = "<@"+interaction.options.getUser('gm').id+">";
 		let ReportName = interaction.options.getString('reportname');
         let QueryPlayerInfo;
 
@@ -42,6 +43,10 @@ module.exports = {
 		else if (ReportName.length >= 60) {
 			await interaction.editReply({ content: 'Name is too long.' });
 			return;
+		}
+
+		if (MakeSSR === null){
+			MakeSSR = false
 		}
 
 		PlayerDiscordMention = PlayerDiscordMention.replace(/!/g, '');
@@ -70,11 +75,10 @@ module.exports = {
 			case 'yes':
 
 
-				if (PlayerDiscordMention === '@everyone') {
+				if (MakeSSR === true) {
 
 					if (interaction.member.roles.cache.some(r => [RoleBotAdmin, RoleStaff].includes(r.name))) {
 
-						MakeSSR = true;
 						StringToReply = 'Special Session Report ***"' + ReportName + '"*** has been created';
 						await PlayerData.find({ Status: 'Active' }).then((PlayerDatas) => {
 							PlayerDatas.forEach((PlayerData) => {
@@ -85,6 +89,7 @@ module.exports = {
 
 					}
 					else {
+						MakeSSR = false
 						interaction.update({ content: 'You lack the role(s) to make a SSR report.', embeds: [], components: [] });
 						break;
 					}

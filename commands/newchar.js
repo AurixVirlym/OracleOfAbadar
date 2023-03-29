@@ -60,7 +60,7 @@ module.exports = {
 
 		if (typeof PlayerName != undefined) {
 			var QueryPlayerInfo = await PlayerData.findOne({ DiscordId: PlayerDiscordMention });
-			var QueryCharacterInfo = await CharacterData.findOne({ Name: CharacterName });
+			var QueryCharacterInfo = await CharacterData.findOne({ Name: CharacterName, BelongsTo: PlayerDiscordMention });
 		}
 		else {
 			await interaction.editReply({ content: 'Incorrect Player Mention' });
@@ -106,10 +106,10 @@ module.exports = {
 					CardAllowed: false,
 				};
 
-				var data = new CharacterData(item);
+				let data = new CharacterData(item);
 				await data.save();
 
-				var QueryCharacterInfo = await CharacterData.findOne({ Name: CharacterName });
+				let QueryCharacterInfo = await CharacterData.findOne({ Name: CharacterName });
 
 				await QueryPlayerInfo.Characters.push(QueryCharacterInfo._id);
 				await QueryPlayerInfo.save();

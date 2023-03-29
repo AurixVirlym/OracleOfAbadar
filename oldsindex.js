@@ -3799,12 +3799,13 @@ client.on('interactionCreate', async interaction => {
 		
 		console.log(NewCards)
 		console.log(NewCards.length)
-			
+		let MainSetSize = MainSetData.CardPoolSize
 		for (let index = 0; index < NewCards.length; index++) {
 			let Card = NewCards[index];
-			NewCards[index].CID = MainSetData.CardPoolSize + index
+			NewCards[index].CID = MainSetSize + index
 			MainSetData.CardPool[0].push(Card)
-			MainSetData.CardPool[Card.Tier].push(Card)
+
+			MainSetData.CardPool[Card.Tier].push(MainSetSize + index)
 			MainSetData.CardPoolSize += 1
 		}
 		MainSetData.markModified('CardPool')

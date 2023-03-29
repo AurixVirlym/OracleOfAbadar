@@ -97,7 +97,7 @@ module.exports = {
 
 					if (GiverCardOnGifteeList === -1) {
 
-						QueryGifteeInfo.CardCollection.push({ CardName: QueryGiverInfo.CardCollection[GiverCardOnList].CardName, CardTag: GiverCard, quantity: 1 });
+						QueryGifteeInfo.CardCollection.push({ CardName: QueryGiverInfo.CardCollection[GiverCardOnList].CardName, CardTag: GiverCard, quantity: 1, CardLevel: QueryGiverInfo.CardCollection[GiverCardOnList].CardLevel, CardType: QueryGiverInfo.CardCollection[GiverCardOnList].CardType });
 						QueryGiverInfo.CardCollection[GiverCardOnList].quantity -= 1;
 
 

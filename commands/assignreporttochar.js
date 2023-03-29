@@ -67,7 +67,7 @@ module.exports = {
 				if (typeof PlayerName != undefined) {
 					var QueryPlayerInfo = await PlayerData.findOne({ DiscordId: PlayerDiscordMention });
 					var QueryReportInfo = await ReportData.findOne({ Name: ReportName });
-					var QueryCharInfo = await CharacterData.findOne({ Name: CharName });
+					var QueryCharInfo = await CharacterData.findOne({ Name: CharName, BelongsTo: PlayerDiscordMention });
 
 				}
 				else {

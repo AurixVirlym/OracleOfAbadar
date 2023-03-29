@@ -146,18 +146,37 @@ module.exports = {
 		}
 
 
-		StringToReply = '**' + NumberOfPlayersPlayed + '** players who played in games.';;
-		PlayersPlayedOnDisplay = PlayersPlayed.slice(0, 16);
+		
+		PlayersPlayedOnDisplay = PlayersPlayed.slice(0, 30);
 
-		for (const Element of PlayersPlayedOnDisplay) {
-			if (Element.GamesRan == 0) {
-				StringToReply += '\n' + Element.name + ' - **' + Element.quantity + '** games played.';
-			}
-			else {
-				StringToReply += '\n' + Element.name + ' - **' + Element.quantity + '** games played and **' + Element.GamesRan + '** games ran.';
-			}
+		let AverageGames = 0
+		let StringToAdd =""
+
+		for (const Element of PlayersPlayed) {
+			AverageGames += Element.quantity
 		}
 
+		for (let index = 0; index < PlayersPlayedOnDisplay.length; index++) {
+			const Element = PlayersPlayedOnDisplay[index];
+
+			let SpacedPlayed = String(Element.quantity)
+			let	SpacedRan = String(Element.GamesRan)
+
+			let SpacedIndex = String(index) + ". "
+
+				while (SpacedIndex.length < 4) {
+					SpacedIndex += '\xa0'
+				}
+				SpacedIndex = "`"+SpacedIndex+"`"
+
+			StringToAdd += '\n' + `${SpacedIndex}` + Element.name + " **" + SpacedPlayed + '** played - **' + SpacedRan + '** ran.'
+			
+			
+		}
+		AverageGames = AverageGames / NumberOfPlayersPlayed
+		StringToReply = `**${AverageGames.toFixed(2)}** games played per player with at least 1 game played on average.` + '\n**' + NumberOfPlayersPlayed + '** players who played in games.'
+		+  StringToAdd
+	
 
 		const rowlist = new ActionRowBuilder()
 			.addComponents(
@@ -186,27 +205,39 @@ module.exports = {
 		});
 
 		let currentIndex = 0;
+		let PageSize = 30
+		let MaxIndexLength = PlayersPlayed.PageSize
 		collector.on('collect', async interaction => {
 			{
 
 
 				// Increase/decrease index
-				if (interaction.customId === 'forwardId' && currentIndex + 16 - PlayersPlayed.length < 0) {currentIndex += 16;}
-				else if (currentIndex - 16 >= 0 && interaction.customId === 'backId') {currentIndex -= 16;}
+				if (interaction.customId === 'forwardId' && currentIndex + PageSize - PlayersPlayed.length < 0) {currentIndex += PageSize;}
+				else if (currentIndex - PageSize >= 0 && interaction.customId === 'backId') {currentIndex -= PageSize;}
 
 
-				PlayersPlayedOnDisplay = PlayersPlayed.slice(currentIndex, currentIndex + 16);
-				StringToReply = '**' + NumberOfPlayersPlayed + '** players who played in games.';
+				PlayersPlayedOnDisplay = PlayersPlayed.slice(currentIndex, currentIndex + PageSize);
+				StringToReply = `**${AverageGames.toFixed(2)}** games played per player with at least 1 game played on average.` + '\n**' + NumberOfPlayersPlayed + '** players who played in games.'
+		
 
-				for (const Element of PlayersPlayedOnDisplay) {
-					if (Element.GamesRan == 0) {
-						StringToReply += '\n' + Element.name + ' - **' + Element.quantity + '** games played.';
+				for (let index = 0; index < PlayersPlayedOnDisplay.length; index++) {
+					const Element = PlayersPlayedOnDisplay[index];
+					
+					let SpacedPlayed = String(Element.quantity)
+					let	SpacedRan = String(Element.GamesRan)
+					let SpacedIndex = String(currentIndex+index) + ". "
+
+					while (SpacedIndex.length < 4) {
+						SpacedIndex += '\xa0'
 					}
-					else {
-						StringToReply += '\n' + Element.name + ' - **' + Element.quantity + '** games played and **' + Element.GamesRan + '** games ran.';
-					}
+					SpacedIndex = "`"+SpacedIndex+"`"
+	
+				StringToReply += '\n' + `${SpacedIndex}` + Element.name + " **" + SpacedPlayed + '** played - **' + SpacedRan + '** ran.'
+
 				}
-
+		
+				FooterNoteForIndex = String("Showing " + currentIndex + "-" + (PageSize+ currentIndex) + " of " + MaxIndexLength)
+				
 				// Respond to interaction by updating message with new embed
 				await interaction.update({
 					embeds: [new EmbedBuilder()

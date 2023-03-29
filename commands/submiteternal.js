@@ -5,7 +5,9 @@ const {
     RoleBotAdmin,
 	RoleStaff,
 	RolePlayerGM,
+    GenCardEmbed,
 } = require('../constants.js');
+const { EmbedBuilder } = require('discord.js');
 
 const isImageURL = require('image-url-validator').default;
 
@@ -37,11 +39,12 @@ module.exports = {
         { name: 'Thaumaturge', value: 'Thaumaturge' },
         { name: 'Witch', value: 'Witch' },
         { name: 'Wizard', value: 'Wizard' },
-        { name: 'Kineticist ', value: 'Kineticist ' },
+        { name: 'Kineticist', value: 'Kineticist' },
+        { name: 'Companion', value: 'Companion' },
     ).setRequired(true))
     .addStringOption(option => option.setName('type').setDescription('Type of the character.').addChoices(
         { name: 'Striker', value: 'Striker' },
-        { name: 'Artillery ', value: 'Artillery ' },
+        { name: 'Artillery', value: 'Artillery' },
         { name: 'Support', value: 'Support' },
         { name: 'Controller', value: 'Controller' }).setRequired(true))
     .addStringOption(option => option.setName('description').setDescription('A little fluffy description for your character no longer than a tweet.').setMinLength(1).setMaxLength(240).setRequired(true))
@@ -69,7 +72,7 @@ module.exports = {
 		const PlayerDiscordID = interaction.user.id;
 		let PlayerDiscordMention = '<@' + PlayerDiscordID + '>';
 
-		let PlayerName = await client.users.fetch(PlayerDiscordID);
+		let PlayerName = interaction.user
 
 
         let EternalSetData = await CardData.findOne({ Tag: "4EVA" });
@@ -103,17 +106,22 @@ module.exports = {
 				EternalSetData.CardPool[0].push(Card);
                 EternalSetData.CardPoolSize += 1
 				
-			}
+			
                 QueryPlayerInfo.EternalCards += 1
                 EternalSetData.markModified('CardPool')
                 await QueryPlayerInfo.save();
 				await EternalSetData.save();
                 StringToReply = "Card accepted with no issue, let Danni know as cards are not added to the set until she manually edits it."
-                let CardEmbed = GenCardEmbed(Card, EternalSetData);
+
+                let CardEmbed = await GenCardEmbed(Card, EternalSetData);
                 await interaction.editReply({
-                    content: StringToReply, embeds: CardEmbed
+                    content: StringToReply, embeds: [CardEmbed]
                 });
                 return
+            } 
+            else {
+                StringToReply = 'Bad image, try again';
+            }
 
                
         } else {

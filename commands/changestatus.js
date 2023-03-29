@@ -13,7 +13,7 @@ module.exports = {
 	data: new SlashCommandBuilder().setName('changestatus')
     .setDescription('Changes status of character(s). use character name to change a single char or player to change all.')
     .addStringOption(option => option.setName('status').setDescription('The status you wish to change to.').setRequired(true).addChoices(
-        { name: 'Awaiting Creation Approval', value: 'Awaiting Creation Approval.' },
+        { name: 'Awaiting Creation Approval', value: 'Awaiting Creation Approval' },
         { name: 'Awaiting Approval', value: 'Awaiting Approval.' },
         { name: 'Approved', value: 'Approved' },
         { name: 'Unavailable for Sessions', value: 'Unavailable for Sessions' },
@@ -21,8 +21,10 @@ module.exports = {
         { name: 'M.I.A.', value: 'M.I.A.' },
         { name: 'Retired', value: 'Retired' },
         { name: 'Shadowrealm (Banned)', value: 'Shadowrealm (Banned)' }))
+	.addUserOption(option => option.setName('mention').setDescription('Player discord @mention, use for changing the status on characters of a player.').setRequired(true))
     .addStringOption(option => option.setName('character').setDescription('Character name, case sensitive'))
-    .addUserOption(option => option.setName('mention').setDescription('Player discord @mention, use for changing the status on characters of a player.')),
+    .addBooleanOption(option => option.setName('allchars').setDescription('Do you wish apply the status to all of the characters of the player?')),
+
 	async execute(interaction,client) {
 
         await interaction.deferReply();
@@ -38,6 +40,13 @@ module.exports = {
 
         let CharName = interaction.options.getString('character');
 		let NewStatus = interaction.options.getString('status');
+		let ChangeAll = interaction.options.getString('allchars');
+		let QueryCharInfo;
+		if (ChangeAll == null)
+		{
+			ChangeAll = false
+		}
+
 
 		if (PlayerDiscordData !== null) {
             PlayerDiscordID = PlayerDiscordData.id
@@ -48,12 +57,13 @@ module.exports = {
 
 
 
-		if (typeof PlayerDiscordMention != undefined && PlayerDiscordMention !== null) {
+		if (typeof PlayerDiscordMention != undefined && PlayerDiscordMention !== null && ChangeAll == true) {
+
 			PlayerDiscordMention = PlayerDiscordMention.replace(/!/g, '');
 			StringToReply = '';
 			const QueryPlayerInfo = await PlayerData.findOne({ DiscordId: PlayerDiscordMention });
 			if (QueryPlayerInfo !== null) {
-                let QueryCharInfo
+              
 				for (const CharacterID of QueryPlayerInfo.Characters) {
 					QueryCharInfo = await CharacterData.findOne({ _id: CharacterID });
 
@@ -83,15 +93,20 @@ module.exports = {
 			await interaction.editReply({ content: StringToReply });
 			return;
 
-		}}
+		}
 		else if (typeof CharName != undefined) {
-			var QueryCharInfo = await CharacterData.findOne({ Name: CharName });
+			QueryCharInfo = await CharacterData.findOne({ Name: { "$regex": CharName, "$options": "i" }, BelongsTo: PlayerDiscordMention });
 
 		}
 		else {
 			await interaction.editReply({ content: 'Did not find a character name.' });
 			return;
 		}
+	
+	
+	
+	}
+		
 
     
 

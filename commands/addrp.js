@@ -9,7 +9,7 @@ const {
 module.exports = {
 	data: new SlashCommandBuilder().setName('addrp')
     .setDescription('Gives Recycple Points to Everyone.')
-    .addNumberOption(option => option.setName('amount').setDescription('The amount of XP to change').setMinValue(0).setMaxValue(100).setRequired(true))
+    .addNumberOption(option => option.setName('amount').setDescription('The amount of RP to give').setMaxValue(100).setRequired(true))
     .addUserOption(option => option.setName('mention').setDescription('A specific person to award RP')),
 
 	async execute(interaction,client) {

@@ -78,7 +78,9 @@ module.exports = {
 						}
 					}
 					await interaction.deferUpdate();
+
 					EmbedString = await PublishSR(QueryReportInfo, interaction);
+					
 					await interaction.editReply({ content: EmbedString, embeds: [], components: [] });
 					collector.stop();
 

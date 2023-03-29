@@ -14,10 +14,24 @@ const {
 
 module.exports = {
 	data: new SlashCommandBuilder().setName('purchase')
-    .setDescription('Purchases or sells an item on a character you own. Give a negative value to sell an item.')
+    .setDescription('Purchases or sells an items on a character you own. Give a negative value to sell an item.')
     .addStringOption(option => option.setName('character').setDescription('Character Name').setMinLength(1).setMaxLength(30).setRequired(true))
-    .addStringOption(option => option.setName('item').setDescription('Name of item(s) purchased or sold.').setMinLength(1).setMaxLength(80).setRequired(true))
-    .addNumberOption(option => option.setName('gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999).setRequired(true)),
+    .addStringOption(option => option.setName('1-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('1-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
+	.addStringOption(option => option.setName('2-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('2-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
+	.addStringOption(option => option.setName('3-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('3-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
+	.addStringOption(option => option.setName('4-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('4-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
+	.addStringOption(option => option.setName('5-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('5-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
+	.addStringOption(option => option.setName('6-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('6-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
+	.addStringOption(option => option.setName('7-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('7-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
+	.addStringOption(option => option.setName('8-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('8-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999)),
 
 	async execute(interaction,client) {
 
@@ -26,21 +40,50 @@ module.exports = {
         let PlayerDiscordID = interaction.user.id;
 		let PlayerDiscordMention = '<@' + PlayerDiscordID + '>';
 		let CharName = interaction.options.getString('character');
-		let PurchasedItem = interaction.options.getString('item');
-		let PurchasedValue = interaction.options.getNumber('gp');
+		
+
+		const PurchasedItem = [
+			interaction.options.getString('1-item'),
+			interaction.options.getString('2-item'),
+			interaction.options.getString('3-item'),
+			interaction.options.getString('4-item'),
+			interaction.options.getString('5-item'),
+			interaction.options.getString('6-item'),
+			interaction.options.getString('7-item'),
+			interaction.options.getString('8-item'),
+		];
+
+		const PurchasedValue = [
+			interaction.options.getNumber('1-gp'),
+			interaction.options.getNumber('2-gp'),
+			interaction.options.getNumber('3-gp'),
+			interaction.options.getNumber('4-gp'),
+			interaction.options.getNumber('5-gp'),
+			interaction.options.getNumber('6-gp'),
+			interaction.options.getNumber('7-gp'),
+			interaction.options.getNumber('8-gp'),
+		];
+
+		const MergedItem = [] 
+		let ConfirmItemList = []
+
+		for (let index = 0; index < 8; index++) {
+			if (PurchasedValue[index] != null && PurchasedItem[index] != null){
 
 
-		if (CharName == null || PurchasedItem == null || PurchasedValue == null) {
-			interaction.editReply({ content: 'Not all inputs given.' });
-			return;
+				let item = {
+					Name: PurchasedItem[index],
+					Value: PurchasedValue[index],
+					Legacy: false
+				}
+				MergedItem.push(item)
+				ConfirmItemList.push(String('\n`'+`${index}. ${item.Name} for ${item.Value} gp`+'`'))
+			}
+			
 		}
-		else if (PurchasedItem.length >= 80) {
-			interaction.editReply({ content: 'Name is too long.' });
-			return;
-		}
 
 
-		EmbedString = 'Do you wish to buy/sell "**' + PurchasedItem + '**"' + ' for **' + PurchasedValue + ' gp** on "**' + CharName + '**"';
+		EmbedString = 'Do you wish to buy/sell on "**' + CharName + '**"\n\n**Item List:**' + ConfirmItemList;
 
 		let ConfirmEmbed = new EmbedBuilder()
 			.setColor(ConfirmEmbedColor)
@@ -61,7 +104,7 @@ module.exports = {
 			case 'yes':
 
 
-				let PlayerName = await client.users.fetch(PlayerDiscordID);
+				let PlayerName = interaction.user
 
 
 				if (typeof PlayerName == undefined) {
@@ -69,52 +112,82 @@ module.exports = {
 				}
 
                 let QueryPlayerInfo = await PlayerData.findOne({ DiscordId: PlayerDiscordMention });
-				let QueryCharInfo = await CharacterData.findOne({ Name: CharName });
+				let QueryCharInfo = await CharacterData.findOne({ Name: CharName, BelongsTo: PlayerDiscordMention });
 
 				if (QueryPlayerInfo != null && QueryCharInfo != null) {
-
-                    let PurchaseEntry;
-
 					if (QueryCharInfo.BelongsTo == QueryPlayerInfo.DiscordId) {
 
 						let PurchaseDate = new Date();
 						PurchaseDate = EuroDateFunc(PurchaseDate);
 
-						if (PurchasedValue >= 0) {
-							RemainingGold = (QueryCharInfo.MaxGold - QueryCharInfo.SpentGold).toFixed(2);
-							if (PurchasedValue <= RemainingGold) {
-								PurchaseEntry = [PurchaseDate, 'Bought: ', PurchasedItem, PurchasedValue]; // date,sold/bought,item,value.
-								QueryCharInfo.PurchaseLog.push(PurchaseEntry);
-								QueryCharInfo.SpentGold = (QueryCharInfo.SpentGold + PurchasedValue).toFixed(2);
-
-								await QueryCharInfo.save();
-								await interaction.update({ content: 'Added Entry: ' + '"' + PurchaseEntry[0] + ' - ' + PurchaseEntry[1] + PurchaseEntry[2] + ' for ' + PurchaseEntry[3] + ' gp."' + ' to ' + QueryCharInfo.Name + '.', embeds: [], components: [] });
-
+						let PurchaseEntry = {
+							Date: PurchaseDate,
+							Sold: 0,
+							Brought: 0,
+							Total: 0,
+							Items: MergedItem
+						}
+						
+						for (const Entry of MergedItem) {
+							if (Entry.Value >= 0)
+							{
+								PurchaseEntry.Brought += Number(Entry.Value)
+							} else {
+								PurchaseEntry.Sold -= Number(Entry.Value)
 							}
-							else {await interaction.update({ content: QueryCharInfo.Name + ' can\'t afford this item.', embeds: [], components: [] });}
-
-						}
-						else if (PurchasedValue < 0) {
-
-							if (QueryCharInfo.SpentGold >= PurchasedValue) {
-								PurchaseEntry = [PurchaseDate, 'Sold: ', PurchasedItem, PurchasedValue]; // date,sold/bought,item,value.
-								QueryCharInfo.PurchaseLog.push(PurchaseEntry);
-								QueryCharInfo.SpentGold = (QueryCharInfo.SpentGold + PurchasedValue).toFixed(2);
-
-								await QueryCharInfo.save();
-								await interaction.update({ content: 'Added Entry: ' + '"' + PurchaseEntry[0] + ' - ' + PurchaseEntry[1] + PurchaseEntry[2] + ' for ' + PurchaseEntry[3] + ' gp"' + ' to ' + QueryCharInfo.Name + '.', embeds: [], components: [] });
-
-							}
-							else {await interaction.update({ content: QueryCharInfo.Name + ' never spent this much gp.', embeds: [], components: [] });}
-
-						}
-						else {
-							await interaction.update({ content: 'ERR', embeds: [], components: [] });
+							PurchaseEntry.Total += Number(Entry.Value)
 						}
 
+						PurchaseEntry.Sold = PurchaseEntry.Sold.toFixed(2)
+						PurchaseEntry.Sold = Number.parseFloat(PurchaseEntry.Sold)
 
-					}
-					else {
+						PurchaseEntry.Brought = PurchaseEntry.Brought.toFixed(2)
+						PurchaseEntry.Brought = Number.parseFloat(PurchaseEntry.Brought)
+
+						PurchaseEntry.Total = PurchaseEntry.Total.toFixed(2)
+						PurchaseEntry.Total = Number.parseFloat(PurchaseEntry.Total)
+						
+
+
+						if (PurchaseEntry.Total > (QueryCharInfo.MaxGold - QueryCharInfo.SpentGold)){
+							await interaction.update({ content: 'You can not afford the purchases by ' + (PurchaseEntry.Total - (QueryCharInfo.MaxGold - QueryCharInfo.SpentGold)) + "gp." , embeds: [], components: [] });
+							return
+						}
+
+						if (PurchaseEntry.Total < 0 && PurchaseEntry.Total < -QueryCharInfo.SpentGold){
+							await interaction.update({ content: 'Your sell values are greater than the items you have listed as having purchased.' , embeds: [], components: [] });
+							return
+						}
+
+						
+						
+						
+						
+						
+						
+						QueryCharInfo.PurchaseLog.push(PurchaseEntry)
+						
+						QueryCharInfo.SpentGold += PurchaseEntry.Total
+						QueryCharInfo.SpentGold = QueryCharInfo.SpentGold.toFixed(2)
+						QueryCharInfo.SpentGold = Number.parseFloat(QueryCharInfo.SpentGold)
+						
+
+						EmbedString = 'Purchased/Sold on "**' + CharName + '**"\n\n**Item List:**' + ConfirmItemList;
+
+						await QueryCharInfo.save()
+
+						ConfirmEmbed = new EmbedBuilder()
+							.setColor(ConfirmEmbedColor)
+							.setDescription(EmbedString)
+							.setTimestamp()
+							.setFooter({ text: 'Absalom Living Campaign' });
+
+					embedMessage = await interaction.update({ embeds: [ConfirmEmbed], components: [] });
+
+						
+						
+					} else
+						{
 						await interaction.update({ content: 'Character does not belong to you, get your own, stinky.', embeds: [], components: [] });
 						break;
 					}

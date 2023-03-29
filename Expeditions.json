@@ -1,0 +1,429 @@
+[
+    {
+    "Name": "Rat Troubles", 
+    "Description": "A troubled innkeeper has asked you to clear out his rat infested basement.",
+    "SuccessMessage": "You kill all the rats and are paid for your efforts.",
+    "FailMessage": "The rats turn out to be bigger than expected and armed with guns.",
+    "AcceptableTiers": [
+        1,
+        2
+    ]
+    },
+     {
+        "Name": "Wild Rumble at the Arena",
+        "Description": "An insane arena master has pitted challengers to battle a menagerie of beast!",
+        "SuccessMessage": "Your team managed to fell the beast without issue!",
+        "FailMessage": "The badgers.... THE BADGERS!",
+        "AcceptableTiers": [
+            1,
+            2
+        ]
+     },
+     {
+        "Name": "Lost in Translation",
+        "Description": "A small import merchant wanted to add wares from Tien to his list of goods. Sadly the person he got to translate for him was a fraud and just said what he wanted to hear. He has tasked you to find out what the deal he made was really about.",
+        "SuccessMessage": "You managed to find the Tien merchant and learned what the deal was about!",
+        "FailMessage": "You were just smiling and nodding not understanding what the Tien trader said.",
+        "AcceptableTiers": [
+            1,
+            2
+        ]
+     },
+     {
+        "Name": "Sewer Shenanigans",
+        "Description": "An apparently infamous Sewer Dragon has been sighted more and more, and a scared neighbourhood wants you to check it out...",
+        "SuccessMessage": "It was only a few kobolds getting ready for a costume party! You helped them out, and they gave you their thanks!",
+        "FailMessage": "You thought it was just kobolds in a disguise... that black dragon didn't appreciate you pulling his tail.",
+        "AcceptableTiers": [
+            1,
+            5
+        ]
+     },
+     {
+        "Name": "The Milk Run",
+        "Description": "The Fixer wants you to investigate a rumor about risen dead in the sewers.",
+        "SuccessMessage": "The shamblers shamble no more, easy time, easy coin.",
+        "FailMessage": "Nobody said anything about an endless horde of zombies!",
+        "AcceptableTiers": [1]
+     },
+     {
+        "Name": "Fastest Feet Finish First",
+        "Description": "There's a footrace competition starting in Absalom, stretching all the way from the Westgate to the Eastgate. Who has the Fastest Feet?",
+        "SuccessMessage": "Out of breath, but not out of luck! Kurgess smiles upon you today!",
+        "FailMessage": "Today was just not your day, time to get back to running laps around the city walls...",
+        "AcceptableTiers": [2, 3]
+     },
+     {
+        "Name": "Elementals Be Gone",
+        "Description": "A local follower of Neyths and Journeyman of Arcanamirium needs aid in a ritual to purfiy Absalom of overflowing elemental energies. You travel out of the walls of the city and spent hours assisting in the ritual",
+        "SuccessMessage": "Though elementals DID appear, you vanquished them!",
+        "FailMessage": "The ritual got out of control and now we got stray elementals running about!",
+        "AcceptableTiers": [1,2,3]
+     },
+     {
+        "Name": "Civilian Rescue",
+        "Description": "A man has fallen into the river in Absalom City, Start the new rescue Subsystem! Hey! Build the Victory Points and off to the rescue. Prepare the skill checks, lower the DC, and make the rescue. The new Emergency Subsystem from Absalom City!",
+        "SuccessMessage": "You did it, a man has been rescued in Absalom City.",
+        "FailMessage": "The crafting rules Paizo has left of us are utter shit and they have failed you.",
+        "AcceptableTiers": [1,2,3]
+     },
+     {
+        "Name": "The Graveyard Shift",
+        "Description": "A Pharasman cleric asks you to oversee a small boneyard for the night. Just you, your thoughts, and a field of tombstones to keep company.",
+        "SuccessMessage": "A quiet night, not much to say except a job well done. Maybe a well-earned breakfast on your way home.",
+        "FailMessage": "As midnight approaches, the sound of bones rattling sends shivers down your spine...and you running back under your blankets.",
+        "AcceptableTiers": [1, 2]
+     },
+     {
+      "Name": "Three Hags and a Baby",
+      "Description": "A noble woman requires your assistance to rescue her estranged daughter who ran off with her lover. This ends up to be far more complicated than you ever imagined, as you run into a Medusa and her golem friend holding the lover captive.  You manage to get both of them on your side, picking up companions as you go. You even manage to befriend a sassy fat orange cat. You're betrayed once at least, while beset by Harpies. Then Bamboo elementals AND Harpies. Then Ogres and water elementals. Then great servants of the Hags. And finally, Hags. So many hags. Four of them. That's one hag too many!",
+      "SuccessMessage": "You manage to interrupt the ritual and stop the Dreamthief Hag from reasserting itself back into reality by possessing the daughter..",
+      "FailMessage": "You fail to interrupt the ritual and stop the Dreamthief Hag from reasserting itself back into reality by possessing the daughter.. thus releasing a new horror into this world.",
+      "AcceptableTiers": [3, 4, 5]
+   },
+   {
+      "Name": "Legwork",
+      "Description": "You thought this would he a job for walking, but it was a job for talking and reading! This lady that refused to give you her name just gave you a few adresses of people and libraries and told you to gather information. Well at least she pays for it.",
+      "SuccessMessage": "It took some time, there were some tough nuts to crack, but you have everything she wanted.",
+      "FailMessage": "You got burried under books insulted as a stalker or worse and decided it's best to stop before you hurt someone that should not be hurt.",
+      "AcceptableTiers": [1, 2, 3]
+   },
+   {
+      "Name": "The Creaking Fright",
+      "Description": "The neighbourhood association told you that almost every house reported creepy noises in the night. After questions they explained those noises included creaking, cackling, whispers, the sound of weapons beings drawn or dragged and promises of death. They of course wish for you to get rid of it.",
+      "SuccessMessage": "Bugbears, you should have known. You slew them all.",
+      "FailMessage": "You thought it was a group of bugbears but it turned out to be living nightmares, better get people that can handle those.",
+      "AcceptableTiers": [2, 3 ]
+   },
+   {
+      "Name": "The Castle of the Mad Archemage - The Upper Ruins",
+      "Description": "An old dungeon has reappeared where it has not been before, tales of the wonders it could hold reach your ears. You venture out with your party and explore the surface floor of a ruined castle.",
+      "SuccessMessage": "You fight off bandits which settled in the ruins and find stairs leading down, you decide its best to leave for now.",
+      "FailMessage": "You run into a duo of harpies whose song stuns your party, you escape but just barely.",
+      "AcceptableTiers": [1 ]
+   },
+   {
+      "Name": "The Castle of the Mad Archemage - The Storage Rooms",
+      "Description": "An old dungeon has reappeared where it has not been before, tales of the wonders it could hold reach your ears. You venture out with your party to explore the first floor of the dungeon, which is infested with mitflits and kobolds. ",
+      "SuccessMessage": "You fight off an entire colony of kobolds, defeating the Gindo the Kobold King.",
+      "FailMessage": "You open are door you aren't meant to open and see an entire group of Hill Giants, You ran.",
+      "AcceptableTiers": [1,2]
+   },
+   {
+      "Name": "The Castle of the Mad Archemage - The Deep Cellars",
+      "Description": "An old dungeon has reappeared where it has not been before, tales of the wonders it could hold reach your ears. You venture out with your party to explore the second of the dungeon. The floor is dominated by brigands, Flesh Ripper Hobgoblins, Bloody Axe Orcs, Grinning Skull Orcs and the Cult of Demoniarch. ",
+      "SuccessMessage": "You clash with one of the major groups of the Deep Cellars and come out victorious.",
+      "FailMessage": "You are driven out by the vicious Bloody Axe Orcs. They live up to their name.",
+      "AcceptableTiers": [2]
+   },
+   {
+      "Name": "Cooks Assistant",
+      "Description": "A local noble's cook is in a mess. It is the Duke's birthday and the cook is making the cake. He needs a lot of ingredients and doesn't have much time.",
+      "SuccessMessage": "You successfully collect eggs, milk and flour and the Duke's birthday party is a success.",
+      "FailMessage": "You are unable to get the ingredients in time, the party is a disaster and it's all YOUR fault.",
+      "AcceptableTiers": [1]
+   },
+   {
+      "Name": "The Ballad of Telunarir",
+      "Description": "A dimension crossing Lunar Dragon of War pays the City of Absalom a visit, seeking challengers to fight him in the most glorious of duels. His magic takes you to an arena in outer space where a battle for the ages takes place.",
+      "SuccessMessage": "After a long and epic fight, Telunarir is defeated with a smile. He grants you vast riches as a reward.",
+      "FailMessage": "Though you tired your best, Telunarir is the real master of war. He spares your life, hoping that you will one day fight again.",
+      "AcceptableTiers": [ 4,5 ]
+   },
+   {
+      "Name": "The Omega Protocols.",
+      "Description": "A Numerian intelligent and self-evolving robot wishes to learn the strength of humanity and as such, has kidnaped powerful adventurers to put them in combat tests against the robot's creations and eventually, themselves.",
+      "SuccessMessage": "The power of your humanity leads you to victory against the robot, who learns the secret of power is one's heart.",
+      "FailMessage": "You have been tested, and were found wanting. The tests were far too much for a mortal to handle.",
+      "AcceptableTiers": [ 4,5 ]
+   },
+   {
+      "Name": "The Ultimate Weapon.",
+      "Description": "Cheliax has uncovered a dangerous, ancient Azlanti weapon and has deployed it in secret to test it's efficiency. It's up to you to stop it before it's used for Mass Destruction.",
+      "SuccessMessage": "The Ultimate Weapon is defeated by your hands and the Inner Sea may stay calm.",
+      "FailMessage": "The Ultimate Weapon possessed power far beyond your imagination.",
+      "AcceptableTiers": [ 4,5 ]
+   },
+   {
+      "Name": "The Dog That Doesn't Bark",
+      "Description": "A while ago there was a string of missing people in the poorer areas in and around absalom, it never cleared up. A group of adventurers did some digging and found out it could be related to a barghest. So a barghest hunt it is!",
+      "SuccessMessage": "A barghest is usually smaller but despite this one being of a great variety, you took it down!",
+      "FailMessage": "The barghest was a little to much, luckily you knew when to call for a tactical retreat.",
+      "AcceptableTiers": [3, 4 ]
+   },
+   {
+      "Name": "The Unending Coil of Dahak",
+      "Description": "There once were brave souls who uncovered the truth of the Alseta’s Ring. What they overcame has been imagined in vivid detail by a wandering minstrel. As his lilting melody caresses your mind's eye, you cannot help but be transported to the scene of struggle against the aspect of Dahak... ",
+      "SuccessMessage": "The Wandering Minstrel spins an epic tale where forces of good overcame a great evil.",
+      "FailMessage": "The Wandering Minstrel imagines an Age of Ashes, where our heroes failed to prevail.",
+      "AcceptableTiers": [5 ]
+   },
+   {
+      "Name": "Ribbit",
+      "Description": "The croaking of frogs is something everyone living in the countryside has heard before. What many people have not lived through is a bunch of boggards storming their lumbering camp. But it happened and the lumberers want it back. They scraped together enough money to afford the services of adventurers!",
+      "SuccessMessage": "You did it, the tide of boggards is stemmed, you even killed their priest.",
+      "FailMessage": "They mentioned a bunch of boggards, not a freackish tide of them!",
+      "AcceptableTiers": [1, 2 ]
+   },
+   {
+      "Name": "Kobold Babysitting",
+      "Description": "A pair of troublesome kobolds need to be watched over while their beleaguered guardian is busy. Prepare for a day filled with Home Alone traps and mischief!",
+      "SuccessMessage": "You've kept the kobolds from causing too much trouble! You're gonna need a break after that experience...",
+      "FailMessage": "The kobolds were too much for you! Those traps are fiendish, you're still smarting from the shockpad...",
+      "AcceptableTiers": [1, 2, 3, 4, 5 ]
+   },
+   {
+      "Name": "Sheep Sheering",
+      "Description": "A local farmer has hired you to sheer some of his sheep though warms you of some creature that is hiding among them. What could possibly go wrong?",
+      "SuccessMessage": "Sheep sheered and no beast encountered. Must of just been his imagination.",
+      "FailMessage": "You found the creature.",
+      "AcceptableTiers": [1 ] 
+   },
+   {
+      "Name": "Creature Care",
+      "Description": "A local farmer has sent out a request for adventures to deal with the creature that walks among his sheep. What manner of being could it be?",
+      "SuccessMessage": "Turns out it was just 2 penguins in a sheep costume. What they are doing here is anyones guess, but that’s a job done.",
+      "FailMessage": "What creature? You couldn’t find anything.",
+      "AcceptableTiers": [1 ]
+   },
+   {
+      "Name": "The Gang runs a Pyramid Scheme",
+      "Description": "A bunch of adventuring goons proceed to stumble into a Pyramid blasting gameshow music, where they engage in some lethal team building exercises. Being promised riches beyond their imagination, they pass from room to room attempting to solve riddles, puzzles, and avoiding death traps. ",
+      "SuccessMessage": "They manage to make it out and achieve incredible riches beyond their imagination! *ᴺᵒᵗ ᵃᵈʲᵘˢᵗᵉᵈ ᶠᵒʳ ᵉᵒⁿˢ ᵒᶠ ᶦⁿᶠˡᵃᵗᶦᵒⁿ",
+      "FailMessage": "No! No! Not that wire! You nincompoop!",
+      "AcceptableTiers": [1,2,3,4,5 ]
+   },
+   {
+      "Name": "Sweet Dreams (Not)",
+      "Description": "An unexplained wave of nightmares has swept over the inhabitants of Eastgate. As if the sleepless nights shared by countless people is not enough those that wander the streets at night so they get tired enough to sleep again have started swearing on their lives that they met the creature from their nightmare. How is this possible? Investigate and get rid of this weird animate dream! ",
+      "SuccessMessage": "It was indeed an animate Dream but you managed to get rid of it.",
+      "FailMessage": "Bad dreams are made of these! Who are you to disagree? You ran before they got you!",
+      "AcceptableTiers": [3,4,5]
+   },
+   {
+      "Name": "Terminator: The Revenge Of Big Ones",
+      "Description": "The gardener in front of you seems even more desperate than his employer. He claims he just resettled the small ones and has no clue why the big ones are rushing his masters garden. Whatever the reason he begs you to get rid of those big ones that are roaming around the garden.",
+      "SuccessMessage": "Easy enough all you had to do was terminate the army ant swarms, no biggie.",
+      "FailMessage": "When he said big ones, you thought army ants, you thought swarms, not as big as a dog!",
+      "AcceptableTiers": [1 ]
+
+   },
+   {
+      "Name": "Terminator: Bigger Badder Angrier",
+      "Description": "The gardener and his master are back. They found the entrance to the big ants tunnels, and when they say big, they mean it. Those are no longer the little buggers you think of, they are easily the size of a dog if not bigger!",
+      "SuccessMessage": "Bigger makes them easier to fight, blades, projectile and magic work wonders.",
+      "FailMessage": "There simply is no end to them! Is there a Nest around or something?",
+      "AcceptableTiers": [1,2]
+
+   },
+   {
+      "Name":  "Terminator: The Bigger They Are",
+      "Description": "Returning to the gardener and his master once again it is time to put an end to this ant infestation once and for all! They found out that an ant queen lives in the tunnel system you fought in last time. She is the source of them, she has to die!",
+      "SuccessMessage": "It is done, the Queen is slain, the garden saved, the money earned!",
+      "FailMessage": "You expected many things but not that the giant ant queen would simply roll over you! Somehow you made it out alive.",
+      "AcceptableTiers": [2, 3 ]
+   },
+   {
+      "Name": "An Ocean Fishing Expedition",
+      "Description": "Captain Foerzagyl invites one and all aboard his ship, The Endeavour, for what promises to be the most fantastical fishing expedition on the Inner Sea. The ship will travel along the eastern coast of the Isle of Kortos calling in at a few scenic points before reversing course at High Harbour and heading back to Absalom.",
+      "SuccessMessage": "During the fishing expedition an attendant angler reels in a most perculiar fish saturated with primal energy. As it lands on the deck of the ship the sky and sea begin to glow with all the colours of the rainbow and the waters are filled with fish. A bumper haul is caught by all.",
+      "FailMessage": "The Trip goes by without anything of note. The Endeavour returns to port, those aboard having failed to catch anything but a few Momora Mora",
+      "AcceptableTiers": [1, 2, 3, 4, 5 ]
+
+   },
+   {
+      "Name": "In the Eternal Back Room",
+   "Description": "Come to think of it, the encounter was meant to be simple. You are meant to investigate an fancy inn where people were disappearing, when you entered the hallway, something quickly became apparent. 'Wait a minute, this isn’t alright. Same old hell tomorrow, with no way out'. The hallway looped and looped, eternally.",
+   "SuccessMessage": "Though days have passed with being trapped, you find the cause of loop and a devil trying to drive you insane enough for pact. With it's death, you were released.",
+   "FailMessage": "Wait a minute, it’s another loop, I am still yet to break free.",
+   "AcceptableTiers": [2, 3, 4]
+   },
+   {
+      "Name": "Obstruct Greed Licensing",
+      "Description": "Paizorc the Orc has asked for help in beating up the wizards that live on the coast as they once again try to make a pact of avarice with the Cult of Hasbrodeus.",
+      "SuccessMessage": "You successfully beat up the greedy wizards and manage to trust bust the Cult of Hasbrodeus.",
+      "FailMessage": "You are defeated, and the Cult of Hasbrodeus has begun mass-producing marketable plushies of you...",
+      "AcceptableTiers": [1, 2,3]
+   },
+   {
+      "Name": "Whiskey Business",
+      "Description": "A tall man with a suspiciously young looking face has forgotten his ID, buy him whiskey.",
+      "SuccessMessage": "The elderly man has his whiskey!",
+      "FailMessage": "The fun police arrest you and kill the old man's dog.",
+      "AcceptableTiers": [1,2]
+   },
+   {
+      "Name": "Thorstenson Family Feud",
+      "Description": "A wealthy business man in the River Kingdoms has hired you to return his son to him. Fair warning he's dangerous and willing to put up a fight!",
+      "SuccessMessage": "Wait a second? That's Sven! He tells you his dad has no intention of paying you. You talk it out and decide not to kidnap a teenager. You get RP in exchange for your good morals!",
+      "FailMessage": "You jump the kid and grab him without getting a good look at his face, he's sent away to the river kingdoms but for some reason the payment never comes through... Maybe succeed the quest next time to find out the real story?",
+      "AcceptableTiers": [1,2]
+   },
+   {
+      "Name": "Fireday Night",
+      "Description": "You're enjoying yourself, having a meal at Raitaro's Ramen in the Foreign Quarter. When the owner and head chef 'Taichiro' walks out of the kitchen, stressed out of his mind.  For reasons he can't explain he needs to win a dance off. You're sceptical at first but judging by his behavior you start to think this might be a literal life or death situation, you agree to bust out your best moves in exchange for a free meal.",
+      "SuccessMessage": "You shuck! You jive! You dance your way to glory and become known as legends in Absalom's vibrant nightlife! 'Taichiro' is most pleased and rewards you handsomely!",
+      "FailMessage": "At a critical moment in your performance you pull a muscle and collapse on the floor! Your team is disqualified from the dance off and 'Taichiro' is taken to another room in the back of the club. He walks out, covered in blood and smoking a cigarette. 'The issue has been resolved.' Is all he says to you, he charges you double for your food.",
+      "AcceptableTiers": [1,2]
+   },
+   {
+      "Name": "Mo Karra and the true meaning of Winterbloom!",
+      "Description": "The Little Treasures orphanage is in trouble! Money is tight and the cost of running the orphanage is getting higher and higher. Mo has decided to take matters into his own hands, but to do what needs to be done he needs help. He has decided that he's going to convince Carson Cash; a local miser to donate the remaining funds to the orphanage. In order to do this he plans on guilting Carson with an elaborate 'three ghosts of Winterbloom' scam.",
+      "SuccessMessage": "With some creative costumes and performances, Carson Cash is successfully gaslit into thinking that he will be lead to an early grave if he doesn't donate to the orphanage. In fact he gives them enough money to get all the kids presents! Hurray for the heartwarming orphans!",
+      "FailMessage": "Mo's mask falls off mid performance and you're discovered! Carson Cash is furious and calls the town guard! You narrowly evade arrest. The orphanage decides to make the difficult decision of forgoing presents this year in order to cover costs. Nice job jerks, you ruined Winterbloom.",
+      "AcceptableTiers": [1,2]
+   },
+   {
+      "Name": "Hic Svnt Vermis", 
+      "Description": "Inquisitor Sigun Inodsarvesh of the Cayden Cailean has requested the aid of adventurers to deal with the Great Ratticus the Wise, a supposed leader of a mutant rat cult of Lamashtu in the Puddles District.",
+      "SuccessMessage": "After trekking in the sewers, you enter a den of evil and purge all of the mutant rats within, including Ratticus... only to learn of greater and darker secrets from the notes left behind the rats. They had another leader and creator.",
+      "FailMessage": "You are forced to retreat after the Great Ratticus the Wise spewed more and more poisons and toxics at you. You also contract ghoul fever, yikes.",
+      "AcceptableTiers": [
+          1,
+          2
+      ]
+      }, 
+      {
+         "Name": "Ratmade Horrors Beyond Comprehension", 
+         "Description": "Inquisitor Sigun Inodsarvesh of the Cayden Cailean has been infected with Rat's Cough, a rare and lethal disease. For his last request, he asks you to hunt the cause of all the mutant rats in the Puddles, an noble alchemist by the name of Rhett Silversong. Upon confronting him in his manor and trying to arrest him, he turned to a monstrosity, a rat with a face like a sea anemone, the size of a carriage. A surge of magic transported you into a magical arena.",
+         "SuccessMessage": "By mastering the concepts of High Alchemy over the course of battle, you defeat the monterous Rhett. His mad notes were kept and used to develop a cure for Rat's Cough... It was however too late for the Inquisitor.",
+         "FailMessage": "The alchemical truths were far too much for you to handle and the monstrosity broke your mind and body.",
+         "AcceptableTiers": [
+             3,4
+         ]
+      },
+      {
+         "Name": "All My Haflings Hate the SPAAG", 
+         "Description": "It's the evening, it's dark and you are in the Ivy District. In the corner of your eye, you seen a halfing dressed in black, with a balaclava over their face though their long red hair still sticks out. The biggest concern you have however, is their bag, which is clearly filled with flasks of alchemist fires. They quickly explains to you that they are here to teach the Street Performers and Actors' Guild a lesson. They shouldn't be going around extorting and pressganging performers to be in their stupid guild.",
+         "SuccessMessage": "You agree, and grab an alchemist fire from them. You got an empty office to burn.",
+         "FailMessage": "You walk away, finding yourself unable to spring to action.",
+         "AcceptableTiers": [
+             1,
+             2
+         ]
+         },
+      {
+         "Name": "Language Barrier", 
+         "Description": "A foreign man approaches you, and says *'Czy możesz mi powiedzieć, jak dostać się do dzielnicy doków?'*. You stand there stunned and confused, the man repeats himself. You start trying to decipher what the man said. Whatever it is, it's urgent.",
+         "SuccessMessage": "It's Skald! You answer back *'Idź na południe i w prawo. Idź stary, idź!' Możesz to zrobić!'* The man seems satisfied and follows your directions to the Docks Districts. He leaves you with a few recycle points for your trouble",
+         "FailMessage": "You keep trying to ask the man to clarify what he means in common, and he just does not get you. He just walks away...",
+         "AcceptableTiers": [
+             1
+         ]
+         },
+      {
+         "Name": "Bumbling Bayou Buddies", 
+         "Description": "A sweaty desperate halfling comes to you by the name of Shimmie Sungold festooned in patches, declaring that he’s lost three young ‘Green Teens’, a scouting troupe of nature loving halflings. Into the swamps you venture, fighting swarms of blood suckers, cruel trolls, and spinning gators. A Grippli grandmother by the name of Miinoa helps to point you in the right direction, to a Grippli city run by a mysterious giant sentient bipedal catfish calling himself the Kingfish. He knows where they lie and offers to help, but only if you assist in his assassination of a Boggard chieftain Rowdy Ransdel – which you oblige. Then he leads you on a fantastic magical powered fanboat ran by a gnome calling herself the Fantastic Fabienne: to a sunken fortress held by Kobolds. There you fight them and their leader, a nefarious, overly muscular and veiny kobold calling himself Mak Truk, Lord of the Domains of Gains. Will our heroes free the Green Teens, Hoppart, Floppart, and Sloppart?! ", 
+         "SuccessMessage": "You have! You’ve choke slammed Mak Truk through a table, thus ensuring your victory and the freedom of Hoppart, Floppart, and Sloppart!", 
+         "FailMessage": "Shamed and defeated, you have been tossed out upon your ear in the face of Mak Truk and his unstoppable training regime and steroid use.", 
+         "AcceptableTiers": [1,2,3]
+      },
+      {
+         "Name": "Bank Robbery Wagon Chase",
+         "Description": "Your team was at a restaurant for a nice day out when a wagon dropping gold pieces and shooting crossbow bolts blows past you. What luck, you have a perfectly good wagon on hand you can give chase with!",
+         "SuccessMessage": "Your team leads a daring high speed wagon chase through the streets of Absalom and catches up to the robbers, apprehending them. You're the toast of the town for the day!",
+         "FailMessage": "Your team leads a daring high speed wagon chase through the streets of Absalom..but oh no, you crashed your wagon into a fruit cart! Fruit is EVERYWHERE and everyone is upset.",
+         "AcceptableTiers": [1, 2, 3]
+      },
+      {
+         "Name": "Demon Sealing Ritual",
+         "Description": "The White Moth Monastery requires a team of individuals to come by and perform their monthly demon sealing ritual. If they succeed at some tests of inner truths they should have no problem with the ritual, if they're unsure of themselves the demon will know and will take advantage of that.",
+         "SuccessMessage": "Your team manages to complete the ritual without a hitch. You learned some things about yourselves in the process and actualized some self improvement.",
+         "FailMessage": "Your team was totally not zen and really ruined the vibes of the ritual. The demon escaped and was eventually sealed back up by the secondary squad.",
+         "AcceptableTiers": [2, 3, 4]
+      },
+      {
+         "Name": "Santo Klaus and his Abomination Elves Strike Back!",
+         "Description": "Santo Klaus and his cult of intelligent undead abominations are coming to town to steal the Winter Week presents of all the good children of the Isle of Kortos. Is there any adventurers with the gumption to stop him?!",
+         "SuccessMessage": "Santo and his evil Elves are stopped in their tracks. The children's presents are safe and sound thanks to the help of some hardy adventurers! One village invites the party to a Winter Week celebration dinner to celebrate!",
+         "FailMessage": "Santo and his Elves manage to break through the adventurers stand, the children are DEVASTATED as the wake up to no gifts and little hard poops in their stockings.",
+         "AcceptableTiers": [1, 2, 3]
+      },
+      {
+         "Name": "Finding Rong",
+         "Description": "Rong, the goblin housemate of a young halfling lady named Brien, got lost again. Or did she just run away? No one seems to know for sure. Alas the young lass is asking your party to assist in finding Rong. As the young goblin is fascinated by clockwork, she i s probably somewhere around the market of wonders in Westgate.",
+         "SuccessMessage": "Brien was right, she was in the market of Wonders, hiding behind a stall tinkering on clockwork with a red horned girl!",
+         "FailMessage": "There were clockwork and they were so useful for your endeavors and they were cheap, oh right... Rong, you forgot to look for her.",
+         "AcceptableTiers": [1, 2 ]
+      },
+      {
+         "Name": "Transporter",
+         "Description": "A Lady that introduced herself as the Fixer offered you a transport job in the backroom of the Dragonhead Inn. The Job is simple, pick up a package at midnight and deliver it too a drop spot until dawn. Why she wouldn't send it with a curier, she didn't say only that expediency was important.",
+         "SuccessMessage": "For some reasons a bunch of robed people wanted the package and attacked you. You got rid of them without the package getting damaged and delivered it to what turned out to be a hospital.",
+         "FailMessage": "The package was sought after by a gang of robed people that attacked you. During the fight the package and it's content got damaged, the filigree clockwork inside utterly destroyed. ",
+         "AcceptableTiers": [3,4] 
+
+      },
+      {
+         "Name": "The Village Tree",
+         "Description": "The giant tree in the middle of a nearby village is wilting and the residents can't figure out why! This tree has been around for centuries, it would be a tragedy if it were to die. Can someone figure out why it is dying?",
+         "SuccessMessage": "Adventurers tracked down the source of the issue: magic termites infested the roots and were quickly eating away at the tree. The adventurers cleared out the magic termites and the tree recovered in short order!",
+         "FailMessage": "The source went unfound, that is until the tree unfortunately perished and they tore it down; only to find a massive magical termite nest underneath. Time to call an exterminator I guess.",
+         "AcceptableTiers": [1, 2]
+      },
+      {
+         "Name": "Reefclaw Infestation",
+         "Description": "A local lighthouse is complaining about a new infestation of Reefclaw in the rock shores below the vital structure. As this is a very important lighthouse, the naval guilds of Absalom are paying top dollar for adventurers.",
+         "SuccessMessage": "The Adventurers successful drove out the Reefclaw infestation! The naval guilds are ecstatic at the development and the party is well regarded in the news among the traders sailing that foggy evening who appreciated having the lighthouse.",
+         "FailMessage": "The adventurers failed! The Reefclaw problem has accelerated to the point that the lighthouse keeper abandoned his post. The lighthouse has gone dark which has caused most ships to just anchor until daylight. Everyone is really frustrated.",
+         "AcceptableTiers": [1, 2]
+      },
+      {
+         "Name": "The Deadliest Catch",
+         "Description": "A local fishery is complaining of lost stock over night. They figure the thieves are coming in from the vents in the top of their building, as the windows are completely undisturbed in the morning, but they're not sure. They're hiring adventurers to stake out the fish monger building to find out!",
+         "SuccessMessage": "The Adventurers found the source of the lost stock, Cave Fishers! They indeed went through the vents at the top with their mega long grabbers. The party showed down with these deadly foes and came out on top. The fishermen are most pleased!",
+         "FailMessage": "The adventurers didn't even see the Cave Fishers coming. They came from a dark cave nearby, creeping along the walls until they got the drop on the party. They were sent to urgent care and the fishermens guild are hiring replacement adventurers to track down the Cave Fishers.",
+         "AcceptableTiers": [1,2]
+      },
+      {
+         "Name": "Rat's Troubles",
+         "Description": "A group of rats have asked you to represent them against a corrupt innkeeper who seeks to evict them from their ancestral basement home.",
+         "SuccessMessage": "You defeat the innkeeper in the court of law for his violation of Absalom's tenant laws.",
+         "FailMessage": "By the time you had your case ready, the innkeeper had already hired other adventurers to exterminate your rat defendants.",
+         "AcceptableTiers": [1, 2, 3]
+      },
+      {
+         "Name": "Malakai the Mediocre in: The Red Red Scare",
+         "Description": "Local druid Malakai the Mediocre hit the flay leaf a little too hard a few nights back and gave a colony of Red Pandas sentience, unfortunately he left the door to his library unlocked and they discovered his copy of 'The Collected Works of Grandfather Pei' and now they're all radical communists called 'The Red Red Pandas', who plan on taking the city.",
+         "SuccessMessage": "You convince the Pandas to bring their radical ideas to The Stolen Lands instead, and they embark on a quest to set up a new utopian nation.",
+         "FailMessage":  " The Red Red Pandas defeat you and take control of a local brewery, turning it into a worker's co op, this isn't too bad until you realize all the drinks are overpriced now.",
+         "AcceptableTiers": [1, 2] 
+      },
+      {
+         "Name": "Showdown",
+         "Description": "In a strange fit of honor a local gang decided to challange adventurers to a group duel at high noon. The 'Slinger's Call' all wield firearms and some of them even magic to a degree. They chose to duel in front of the Pathfinders society and claim to honor the outcome.",
+         "SuccessMessage": "The 'Slinger's Call' gave you a run for your money, but in the end you triumphed. True to their word they leave Absalom.",
+         "FailMessage": "Their gunplay manages to utterly crushes your resolve to fight, though they are forced to run from the guard in the end.",
+         "AcceptableTiers": [2, 3, 4 ]
+      },
+      {
+         "Name": "Malakai the Mediocre in: Gorilla Warfare",
+         "Description": "Local druid Malakai the Mediocre has a problem, you see recently he got into an argument about human nature with a Cleric of Gorum who declared that Warfare is what separates humans from animals. Incensed by this Malakai gifted sentience to a troop of gorillas, then taught them basic military theory and had them challenge the Gorumites to honorable combat, which they easily won. But now the gorillas yearn for more conflict.",
+         "SuccessMessage": "You defeat the gorillas, disproving Killer Ape Theory once and for all.",
+         "FailMessage":  "The gorillas overrun you and attack the town. They're promptly defeated by the town guard but now Malakai has to lay low for a while.",
+         "AcceptableTiers": [1, 2]
+      },
+      {
+         "Name": "Pirate Terror at the Isle of Kortos!",
+         "Description": "A new pirate gang preying on traders around the Isle of Kortos has traders in a roar at the Absalom port. The coast guard are offering a steep reward to a daring party of adventurers to take down this evil pirate menace; time to hire up a boat and hit the seas!",
+         "SuccessMessage": "A daring group of adventurers chased down and boarded the pirate gang, apprehending the lot of them. They and their captain now all sit in the Absalom jail awaiting sentencing!",
+         "FailMessage":  "Yo ho! The boat you hired gets blown to smithereens by cannon fire; you're all stranding on a tiny island outside of Absalom for a day until a trading vessel happens by to pick you up.",
+         "AcceptableTiers": [2,3]
+      },
+      {
+         "Name": "Obelisk Calls For Aid!",
+         "Description": "The city of Obelisk, far away in the Shackles is looking for adventurers to explore the shifting mega-dungeon that their city was named for. They thought establishing a town there would drive adventurers to explore it, but it seems the adventurers settled down and did everything in the area except that; so now the city is calling for outside help.",
+         "SuccessMessage": "Your team manages to explore a strange section of the shifting mega dungeon! You find gold and strange one-time-use items that you will probably forget about after a while.",
+         "FailMessage":  "Oh no, the mega dungeon proved too dangerous and your team had to retreat having scored no gold, no items, and having mapped only a single room that you ran out of.",
+         "AcceptableTiers": [3,4]
+      },
+      {
+         "Name": "Rat Heist!",
+         "Description": "A team of rats lead by a nameless leader rat, bigger than all of the others, has started raiding a local grocer looking for a cheap score of cheese, meats, and other unexpired products they never have privvy to. The pandemonium, the mayhem! Can't anyone stop them?!",
+         "SuccessMessage": "Your team manages to clear out the rats before much damage is done. Their nameless leader escapes to lead more crime though...",
+         "FailMessage":  "The rats make off like real bandits! They clear out most of the stores of the grocer, who has to shut down for the rest of the week to recover.",
+         "AcceptableTiers": [2]
+      }
+
+   
+]

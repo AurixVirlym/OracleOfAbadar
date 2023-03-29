@@ -17,7 +17,8 @@ module.exports = {
 	data: new SlashCommandBuilder().setName('addapproval')
     .setDescription('Adds an entry to the a character\'s approval log. Staff Only.')
     .addStringOption(option => option.setName('character').setDescription('Character Name, case sensitive').setMinLength(1).setMaxLength(30).setRequired(true))
-    .addStringOption(option => option.setName('approval').setDescription('approval entry to add.').setMinLength(1).setMaxLength(120).setRequired(true)),
+    .addStringOption(option => option.setName('approval').setDescription('Approval entry to add.').setMinLength(1).setMaxLength(800).setRequired(true))
+	.addUserOption(option => option.setName('mention').setDescription('Player Mention').setRequired(true)),
 
 	async execute(interaction,client) {
 
@@ -34,18 +35,35 @@ module.exports = {
 		let CharName = interaction.options.getString('character');
 		let ApprovalLine = interaction.options.getString('approval');
 
+		let PlayerDiscordDataApproved= interaction.options.getUser('mention');
+
+		let PlayerDiscordIDApproved, PlayerDiscordMentionApproved, PlayerNameApproved
+
+		if (PlayerDiscordDataApproved == null) {
+			 PlayerDiscordIDApproved = interaction.user.id;
+			 PlayerDiscordMentionApproved = '<@' + PlayerDiscordIDApproved + '>';
+			 PlayerNameApproved = interaction.user
+		}
+
+		else {
+			PlayerDiscordIDApproved = PlayerDiscordDataApproved.id
+			PlayerDiscordMentionApproved = '<@' + PlayerDiscordIDApproved + '>'
+			PlayerNameApproved = PlayerDiscordDataApproved
+		}
+
+		if (typeof PlayerNameApproved === undefined) {
+			return
+		}
+
 
 		if (CharName == null || ApprovalLine == null) {
 			await interaction.editReply({ content: 'Not all inputs given.' });
 			return;
 		}
-		else if (ApprovalLine.length > 120) {
-			await interaction.editReply({ content: 'Approval length too long.' });
-			return;
-		}
+		
 
 
-		EmbedString = 'Do you wish to approve of "**' + ApprovalLine + '**" for "**' + CharName + '**"?';
+		EmbedString = 'Do you wish to approve of "**' + ApprovalLine + '**" for "**' + CharName + '**"' + PlayerDiscordMentionApproved +'?';
 
 		let ConfirmEmbed = new EmbedBuilder()
 			.setColor(ConfirmEmbedColor)
@@ -70,7 +88,7 @@ module.exports = {
 					return
 				}
 
-                let QueryCharInfo = await CharacterData.findOne({ Name: CharName });
+                let QueryCharInfo = await CharacterData.findOne({ Name: CharName, BelongsTo: PlayerDiscordMentionApproved });
 
 				if (QueryCharInfo != null) {
 

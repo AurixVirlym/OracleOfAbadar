@@ -17,13 +17,21 @@ module.exports = {
     .setDescription('Adds characters to an unpublished report, up to 8 at a time. All are case sensitive.')
     .addStringOption(option => option.setName('reportname').setDescription('Exact report name you wish to add the characters to, must be unpublished.').setMinLength(1).setMaxLength(60).setRequired(true))
     .addStringOption(option => option.setName('character-1').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
-    .addStringOption(option => option.setName('character-2').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
-    .addStringOption(option => option.setName('character-3').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
-    .addStringOption(option => option.setName('character-4').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
-    .addStringOption(option => option.setName('character-5').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
-    .addStringOption(option => option.setName('character-6').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
-    .addStringOption(option => option.setName('character-7').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
-    .addStringOption(option => option.setName('character-8').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30)),
+    .addUserOption(option => option.setName('player-1').setDescription('Player Mention of character 1'))
+	.addStringOption(option => option.setName('character-2').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
+	.addUserOption(option => option.setName('player-2').setDescription('Player Mention of character 2'))
+	.addStringOption(option => option.setName('character-3').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
+    .addUserOption(option => option.setName('player-3').setDescription('Player Mention of character 3'))
+	.addStringOption(option => option.setName('character-4').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
+    .addUserOption(option => option.setName('player-4').setDescription('Player Mention of character 4'))
+	.addStringOption(option => option.setName('character-5').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
+    .addUserOption(option => option.setName('player-5').setDescription('Player Mention of character 5'))
+	.addStringOption(option => option.setName('character-6').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
+	.addUserOption(option => option.setName('player-6').setDescription('Player Mention of character 6')) 
+	.addStringOption(option => option.setName('character-7').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
+    .addUserOption(option => option.setName('player-7').setDescription('Player Mention of character 7'))
+	.addStringOption(option => option.setName('character-8').setDescription('Exact name of the character you wish to add to the report.').setMinLength(1).setMaxLength(30))
+	.addUserOption(option => option.setName('player-8').setDescription('Player Mention of character 8')),
 
 	async execute(interaction,client) {
 
@@ -45,6 +53,27 @@ module.exports = {
 			interaction.options.getString('character-7'),
 			interaction.options.getString('character-8'),
 		];
+
+		const UsersFromMessage = [
+			interaction.options.getUser('player-1'),
+			interaction.options.getUser('player-2'),
+			interaction.options.getUser('player-3'),
+			interaction.options.getUser('player-4'),
+			interaction.options.getUser('player-5'),
+			interaction.options.getUser('player-6'),
+			interaction.options.getUser('player-7'),
+			interaction.options.getUser('player-8'),
+		];
+
+		for (let index = 0; index < UsersFromMessage.length; index++) {
+			if (UsersFromMessage[index] != null) {
+				UsersFromMessage[index] = '<@'+UsersFromMessage[index].id+'>'
+	
+			}
+		}
+
+
+		
 
 
 		let ReportName = interaction.options.getString('reportname');
@@ -88,13 +117,14 @@ module.exports = {
 			case 'yes':
 
 
-				CharsAddToReport(CharsFromMessage, ReportName, interaction);
+				CharsAddToReport(CharsFromMessage, UsersFromMessage, ReportName, interaction);
+				
 				collector.stop();
 
 				break;
 
 			case 'no':
-				await interaction.update({
+				await interaction.editReply({
 					content: 'Cancelled.', embeds: [], components: [],
 				});
 				collector.stop();

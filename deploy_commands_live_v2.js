@@ -29,7 +29,7 @@ const rest = new REST({ version: '10' }).setToken(tokenlive);
 
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
-			Routes.applicationCommands(clientIdlive, guildIdlive),
+			Routes.applicationGuildCommands(clientIdlive, guildIdlive),
 			{ body: commands },
 		);
 
@@ -47,7 +47,7 @@ const rest = new REST({ version: '10' }).setToken(tokenlive);
 
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
-			Routes.applicationGuildCommands(clientIdlive, guildIdlive),
+			Routes.applicationCommands(clientIdlive),
 			{ body: globalcommands },
 		);
 

@@ -37,7 +37,7 @@ module.exports = {
     ))
     .addStringOption(option => option.setName('type').setDescription('Type of the character.').addChoices(
         { name: 'Striker', value: 'Striker' },
-        { name: 'Artillery ', value: 'Artillery ' },
+        { name: 'Artillery ', value: 'Artillery' },
         { name: 'Support', value: 'Support' },
         { name: 'Controller', value: 'Controller' }))
     .addStringOption(option => option.setName('description').setDescription('A little fluffy description for your character no longer than a tweet.').setMinLength(1).setMaxLength(240))
@@ -65,11 +65,10 @@ module.exports = {
 			return
 		}
 
-        const QueryPlayerInfo = await PlayerData.findOne({ DiscordId: PlayerDiscordMention });
-		let QueryCharInfo = await CharacterData.findOne({ Name: CharName });
 
-		if (QueryPlayerInfo != null && QueryCharInfo != null) {
-			if (QueryCharInfo.BelongsTo == QueryPlayerInfo.DiscordId) {
+		let QueryCharInfo = await CharacterData.findOne({ Name: CharName, BelongsTo: PlayerDiscordMention });
+
+		if (QueryCharInfo != null)  {
 
 				if (CardClass !== null && CardClass !== undefined) {
 					QueryCharInfo.CardClass = CardClass;
@@ -102,7 +101,7 @@ module.exports = {
 
 
 				await QueryCharInfo.save();
-			}
+			
 		}
 		else {
 			StringToReply = 'No character with that name found, try again.';

@@ -57,6 +57,10 @@ const PlayerSchema = new mongoose.Schema({
 	CardSort: String,
 	FirstSR: Boolean,
 	EternalCards: Number,
+	WeeklyExpedition: Date,
+	ExpeditionTier: String,
+	ExpeditionPasses: Number,
+	ExpeditionLucky: Number,
 
 
 }, { collection: 'Players' });
@@ -141,6 +145,23 @@ function EuroDateFunc(ToFormatDate) {
 	return `${date}/${month}/${year}`;
 }
 
+function WeekNumber(currentDate) {
+
+	
+	
+	
+	let UTCOFFSET = currentDate.getTimezoneOffset()
+	currentDate.setMinutes(currentDate.getMinutes() + UTCOFFSET)
+
+
+    startDate = new Date(currentDate.getUTCFullYear(), 0, 1);
+    var days = Math.floor((currentDate - startDate) /
+        (24 * 60 * 60 * 1000));
+         
+    return Math.ceil(days / 7);
+
+}
+
 
 function GenCardEmbed(Card, CardSet) {
 	let CardTitle;
@@ -209,12 +230,13 @@ function GenCardEmbed(Card, CardSet) {
 }
 
 
-async function RecalcCharacter(CharToRecalc, interaction) {
+async function RecalcCharacter(CharToRecalc, interaction,PlayerDiscordMention) {
+	
 	StringToReply = String(CharToRecalc);
 	let QueryCharInfo;
 
 	try {
-		QueryCharInfo = await CharacterData.findOne({ Name: CharToRecalc });
+		QueryCharInfo = await CharacterData.findOne({ Name: CharToRecalc, BelongsTo: PlayerDiscordMention });
 	}
 	catch (error) {
 		await interaction.editReply({ content: 'Did not find the character ***' + CharToRecalc + '***.' });
@@ -263,10 +285,12 @@ async function RecalcCharacter(CharToRecalc, interaction) {
 
 }
 
-async function CharsAddToReport(CharsToAddArray, ReportToQuery, interaction) {
+async function CharsAddToReport(CharsToAddArray, UsersFromMessage, ReportToQuery, interaction) {
+
+	await interaction.deferUpdate();
 	let StringToReply = 'Character(s) added:\n';
 	const QueryReportInfo = await ReportData.findOne({ Name: ReportToQuery });
-	CharsConfirmedArray = [];
+	
 	if (QueryReportInfo !== null && CharsToAddArray !== undefined) {
 
 		if (QueryReportInfo.SSR === true) {
@@ -280,32 +304,39 @@ async function CharsAddToReport(CharsToAddArray, ReportToQuery, interaction) {
 				return el != null;
 			});
 
+			UsersFromMessage = UsersFromMessage.filter(function(el) {
+				return el != null;
+			});
+
 
 			if (CharsToAddArray !== null) {
 
+				for (let index = 0; index < CharsToAddArray.length; index++) {
+					let Element = CharsToAddArray[index];
+					let DiscordMention = UsersFromMessage[index]
+					let SameCheck = false;
 
-				for (const Element of CharsToAddArray) {
-					SameCheckID = false;
-					QueryCharInfo = await CharacterData.findOne({ Name: Element });
+					QueryCharInfo = await CharacterData.findOne({ Name: Element, BelongsTo: DiscordMention });
 
 					if (QueryCharInfo !== null && typeof QueryCharInfo !== undefined) {
 						SameCheck = await QueryReportInfo.Characters.includes(QueryCharInfo._id);
 
 						if (SameCheck == false) {
-							StringToReply += QueryCharInfo.Name + ' to ' + QueryReportInfo.Name + '.\n';
+							StringToReply += QueryCharInfo.Name + " " + DiscordMention + ' to ' + QueryReportInfo.Name + '.\n';
 							QueryReportInfo.Characters.push(QueryCharInfo._id);
 
 						}
-						else {(StringToReply += QueryCharInfo.Name + ' already is in ' + QueryReportInfo.Name + '.\n');}
+						else {(StringToReply += QueryCharInfo.Name  + " " + DiscordMention + ' already is in ' + QueryReportInfo.Name + '.\n');}
 
 					}
-					else {(StringToReply += 'Character ' + Element + ' does not exist.\n');}
+					else {(StringToReply += 'Character ' + Element + ' does not exist or user not given.\n');}
+					
 				}
+				
 
 				await QueryReportInfo.save();
 
-				// console.log(CharsConfirmedArray)
-				// QueryReportInfo.Characters = QueryReportInfo.Characters.concat(CharsConfirmedArray)
+
 
 			}
 			else {StringToReply = 'No characters found.';}
@@ -313,15 +344,16 @@ async function CharsAddToReport(CharsToAddArray, ReportToQuery, interaction) {
 		else {StringToReply = 'Report already published.';}
 	}
 	else {StringToReply = 'Report not found.';}
-	await interaction.update({ content: StringToReply, embeds: [], components: [] });
+	await interaction.editReply({ content: StringToReply, embeds: [], components: [] });
 	return
 
 }
 
 async function GMsAddToReport(GMsToAddArray, ReportToQuery, interaction) {
+	await interaction.deferUpdate();
 	let StringToReply = 'GM(s) added:\n';
 	const QueryReportInfo = await ReportData.findOne({ Name: ReportToQuery });
-	CharsConfirmedArray = [];
+	
 	if (QueryReportInfo !== null && GMsToAddArray !== undefined) {
 
 		if (QueryReportInfo.SSR === true) {
@@ -340,7 +372,7 @@ async function GMsAddToReport(GMsToAddArray, ReportToQuery, interaction) {
 
 
 				for (const Element of GMsToAddArray) {
-					SameCheckID = false;
+					let SameCheck = false;
 					QueryGMInfo = await PlayerData.findOne({ DiscordId: Element });
 
 					if (QueryGMInfo !== null && typeof QueryGMInfo !== undefined) {
@@ -359,8 +391,7 @@ async function GMsAddToReport(GMsToAddArray, ReportToQuery, interaction) {
 
 				await QueryReportInfo.save();
 
-				// console.log(CharsConfirmedArray)
-				// QueryReportInfo.Characters = QueryReportInfo.Characters.concat(CharsConfirmedArray)
+
 
 			}
 			else {StringToReply = 'No player found.';}
@@ -368,64 +399,80 @@ async function GMsAddToReport(GMsToAddArray, ReportToQuery, interaction) {
 		else {StringToReply = 'Report already published.';}
 	}
 	else {StringToReply = 'Report not found.';}
-	await interaction.update({ content: StringToReply, embeds: [], components: [] });
+	await interaction.editReply({ content: StringToReply, embeds: [], components: [] });
 return
 }
 
 
 async function PublishSR(QueryReportInfo, interaction) {
-
+	let QueryCharacterInfos = []
 	let ProcessSuccess = 0;
 	let StringToReply = '';
+	let CharsToReward;
 	if (QueryReportInfo !== null) {
 		if (QueryReportInfo.Published === false) {
 
 			CharsToReward = QueryReportInfo.Characters;
 
+			
+
 
 			if (QueryReportInfo.GMs !== null) {
-				for (const Element of QueryReportInfo.GMs) {
-					const QueryPlayerInfo = await PlayerData.findOne({ _id: Element });
-					if (QueryPlayerInfo !== null) {
 
-						QueryPlayerInfo.RecycledPoints += 15;
-						QueryPlayerInfo.UnassignedReports.push(QueryReportInfo._id);
+				let QueryPlayerInfos = await PlayerData.find({
+					'_id': { 
+						$in: QueryReportInfo.GMs
+					}
+					})
+						
+					for (let QueryPlayerInfo of QueryPlayerInfos) {
 
-						QueryPlayerInfo.ReportXP += QueryReportInfo.XP;
+						if (QueryPlayerInfo !== null) {
 
-						StringToReply += '\nGave report ***"' + QueryReportInfo.Name + '"*** to ' + QueryPlayerInfo.DiscordId + ' as an unassigned report and 15 recycle points.';
-
-
-						if (QueryReportInfo.SSR === false) {
-							QueryPlayerInfo.GMXP += Math.round(QueryReportInfo.XP * 0.5);
-							QueryPlayerInfo.FirstSR = true
+							QueryPlayerInfo.ExpeditionPasses += 1;
+							QueryPlayerInfo.UnassignedReports.push(QueryReportInfo._id);
+	
+							QueryPlayerInfo.ReportXP += QueryReportInfo.XP;
+	
+							StringToReply += '\nGave report ***"' + QueryReportInfo.Name + '"*** to ' + QueryPlayerInfo.DiscordId + ' as an unassigned report and 1 Expedition Pass';
+	
+	
+							if (QueryReportInfo.SSR === false) {
+								QueryPlayerInfo.GMXP += Math.round(QueryReportInfo.XP * 0.5);
+								QueryPlayerInfo.FirstSR = true
+							}
+	
+							await QueryPlayerInfo.save();
+							ProcessSuccess += 1;
+	
 						}
-
-						await QueryPlayerInfo.save();
-						ProcessSuccess += 1;
-
+						else {
+							StringToReply += '\nA Database ID was not found.';
+							console.log("SSR Making fucked, missing a Database ID.")
+						}
+						
 					}
-					else {
-						StringToReply += '\nDatabase ID' + Element + 'not found.';
-
-					}
-
-				}
-
-			}
-			else {
+							
+				}else {
 				return 'No GM found on Report.'
 			}
 
-
+			
 			if (CharsToReward !== null) {
-				for (const Element of CharsToReward) {
+
+				QueryCharacterInfos = await CharacterData.find({
+					'_id': { 
+						$in: CharsToReward
+					}
+					})
+
+				for (let QueryCharInfo of QueryCharacterInfos) {
 					{
-						const QueryCharInfo = await CharacterData.findOne({ _id: Element });
+						
 						if (QueryCharInfo !== null) {
 
 							if (QueryCharInfo.CurrentXP == 0 && QueryCharInfo.StartingLevel == QueryCharInfo.Level){
-								const QueryPlayerInfo = await PlayerData.findOne({ DiscordId: QueryCharInfo.BelongsTo });
+								let QueryPlayerInfo = await PlayerData.findOne({ DiscordId: QueryCharInfo.BelongsTo });
 								QueryPlayerInfo.FirstSR = true
 								await QueryPlayerInfo.save()
 							}
@@ -448,28 +495,39 @@ async function PublishSR(QueryReportInfo, interaction) {
 							await QueryCharInfo.save();
 						}
 						else {
-							StringToReply += '\n***"' + Element + '*** not found in database.';
+							StringToReply += '\nA character was not found in database.';
 						}
 					}
 				}
+
 				QueryReportInfo.Published = true;
 				await QueryReportInfo.save();
 				StringToReply += '\n***' + QueryReportInfo.Name + '*** has been published.';
 
 			}
-			else {StringToReply = 'No characters in Report: ' + QueryReportInfo.Name + '.';}
+			else {StringToReply = 'No characters in Report: ' + QueryReportInfo.Name + '.';
+			return StringToReply}
 		}
-		else {StringToReply = 'Report ' + QueryReportInfo.Name + ' already published.';}
+		else {StringToReply = 'Report ' + QueryReportInfo.Name + ' already published.';
+		return StringToReply}
 
 	}
-	else {StringToReply = 'Report ' + QueryReportInfo.Name + ' not found.';}
+	else {StringToReply = 'Report ' + QueryReportInfo.Name + ' not found.';
+	return StringToReply
+	}
+
+	if (QueryCharacterInfos.length != CharsToReward.length) {
+		StringToReply += '\nNot every character on the Report was found - ' + String(CharsToReward.length - QueryCharacterInfos.length) +"/" +String(CharsToReward.length);
+	} 
 
 	if (StringToReply.length >= 2000) {
 		StringToReply = StringToReply.slice(0, 1984) + '\nMessageTooLong';
 	}
 
+
 	if (QueryReportInfo.SSR === true) {
 		StringToReply = 'SSR Published and given out to ' + ProcessSuccess + '/' + QueryReportInfo.GMs.length + ' players.';
+		return StringToReply
 	}
 
 
@@ -509,6 +567,60 @@ function AutoCalcSlots(QueryPlayerInfo) {
 
 }
 
+
+function NumberTierToString(tier) {
+	switch (tier) {
+			case 1:
+			return "Untrained"
+			case 2:
+			return "Trained"
+
+			case 3:
+			return "Expert"
+
+			case 4:
+			return "Master"
+
+
+			case 5:
+			return "Legendary"
+		
+			case 6:
+			return "Eternal"
+			
+
+	
+		default:
+			return "Err"
+			
+	}
+}
+
+function StringTierToNumber(tier) {
+	switch (tier) {
+			case "Untrained":
+			return 1
+
+			case "Trained":
+			return 2
+
+			case "Expert":
+			return 3
+
+			case "Master":
+			return 4
+
+			case "Legendary":
+			return 5
+
+			case "Eternal":
+			return 6
+
+	
+		default:
+			return 0
+	}
+}
 
 function SortCards(QueryPlayerInfo) {
 
@@ -560,8 +672,245 @@ function SortCards(QueryPlayerInfo) {
 		});
 	}
 
+	if (SortType === 'lvl') {
+
+
+
+		QueryPlayerInfo.CardCollection.sort(function(a, b) {
+			const Level_order = parseInt(b.CardLevel) - parseInt(a.CardLevel);
+			const Type_order = a.CardType.localeCompare(b.CardType);
+			return Level_order || Type_order;
+		});
+	}
+
 	return QueryPlayerInfo
 }
+
+async function PullCard(interaction,QueryPlayerInfo,SetsToPull,PullType,RPcost,RarityOdds) {
+				const RngValue = RandomRange(1, 100);
+
+				let PullTier = 1;
+			
+				
+				if (RngValue >= 100) // eternal pull
+				{PullTier = 7;}
+				else
+
+				if (RngValue >= 95) // special pull
+				{PullTier = 6;}
+				else
+
+				if (RngValue >= (RarityOdds.Legendary)) // disabled legendery pull
+				{PullTier = 5;}
+				else
+
+				if (RngValue >= (RarityOdds.Master)) // disabled master pull
+				{PullTier = 4;}
+				else
+
+				if (RngValue >= (RarityOdds.Expert)) // disabled expert roll
+				{PullTier = 3;}
+				else
+
+				if (RngValue >= (RarityOdds.Trained)) // trained roll
+				{PullTier = 2;}
+				else {PullTier = 1;} // untrained roll.
+
+				if (RPcost >= 1000){
+					PullTier = 7
+				}
+
+				let CardsPullable = [[],[],[],[],[],[],[],[]]
+				let CardCIDAdjust = 0
+				
+				await CardData.find({
+					Tag: { $in: SetsToPull}
+				}).then((SetDatas) => {
+					SetDatas.forEach((SetData) => {
+						
+
+						for (const card of SetData.CardPool[0]) {
+							card.Tag = SetData.Tag
+						}
+
+
+
+						if (CardCIDAdjust != 0){
+							
+							
+							for (let CardTier = 1; CardTier < 5; CardTier++) {
+
+								
+
+								for (let index = 0; index < SetData.CardPool[CardTier].length; index++) {
+								
+									SetData.CardPool[CardTier][index] += CardCIDAdjust
+								}
+								
+							}
+
+							for (let index = 0; index < SetData.Specials.length; index++) {
+								
+								SetData.Specials[index] += CardCIDAdjust
+							}
+						
+							for (let index = 0; index < SetData.Eternals.length; index++) {
+								
+								SetData.Eternals[index] += CardCIDAdjust
+							}
+							
+
+							
+						}
+
+						for (let CardTier = 0; CardTier < 5; CardTier++) {
+							if (SetData.CardPool[CardTier].length !== 0)
+						{
+							CardsPullable[CardTier] = CardsPullable[CardTier].concat(SetData.CardPool[CardTier])
+						}
+						}
+						CardsPullable[6] = CardsPullable[6].concat(SetData.Specials)
+						CardsPullable[7] = CardsPullable[7].concat(SetData.Eternals)
+					
+						CardCIDAdjust += SetData.CardPool[0].length
+						
+
+					})
+				})
+				
+				
+				
+
+				if (typeof CardsPullable !== undefined && CardsPullable !== null) {
+					let CardPulled;
+
+
+					while (CardPulled === undefined) {
+
+						if (PullTier === 7) {
+							SizeOfPool = CardsPullable[7].length;
+							if (SizeOfPool === 0) {
+								Message = await interaction.editReply({ content: 'No Eternals cards to Pull found, scream at Danni.',ephemeral: false });
+								break;
+							}
+
+							CIDCardPulled = CardsPullable[7][RandomRange(0, SizeOfPool - 1)];
+
+						} else
+
+
+						if (PullTier === 6) {
+							SizeOfPool = CardsPullable[6].length;
+							if (SizeOfPool === 0) {
+								Message = await interaction.editReply({ content: 'No Special cards to Pull found, scream at Danni.',ephemeral: false });
+								break;
+							}
+
+							CIDCardPulled = CardsPullable[6][RandomRange(0, SizeOfPool - 1)];
+
+						}
+						else { 
+							
+						
+
+							SizeOfPool = CardsPullable[PullTier].length;
+
+							if (SizeOfPool === 0) {
+								PullTier -= 1;
+								if (PullTier == 0) {
+									Message = await interaction.editReply({ content: 'No cards to Pull found.',ephemeral: false });
+									break;
+								}
+							}
+							CIDCardPulled = CardsPullable[PullTier][RandomRange(0, SizeOfPool - 1)];
+							
+					
+						}
+
+						CardPulled = CardsPullable[0][CIDCardPulled];
+
+
+						let InfoSetQuery = await CardData.findOne({ Tag: CardPulled.Tag })
+
+						
+
+						let PulledCardTag = String(CardPulled.Tag + CardPulled.CID)
+
+
+						IsCardOnList = QueryPlayerInfo.CardCollection.findIndex(item => item.CardTag == PulledCardTag);
+
+
+						if (IsCardOnList === -1) {
+							let TypeShortened
+							switch (CardPulled.Type) {
+								case "Support":
+									TypeShortened = "SUP"
+									break;
+								case "Controller":
+									TypeShortened = "CON"
+									break;
+								case "Artillery ":
+									TypeShortened = "ART"
+									break;
+								case "Artillery":
+									TypeShortened = "ART"
+									break;
+								case "Striker":
+									TypeShortened = "STR"
+									break;
+							}
+
+							QueryPlayerInfo.CardCollection.push({ CardName: CardPulled.Name, CardTag: PulledCardTag, quantity: 1, CardLevel: CardPulled.Level, CardType: TypeShortened });
+
+
+						}
+						else {
+							QueryPlayerInfo.CardCollection[IsCardOnList].quantity += 1;
+							QueryPlayerInfo.markModified('CardCollection');
+						}
+
+						QueryPlayerInfo.CardNumber += 1;
+
+						if (CardPulled.Special == true) {
+							QueryPlayerInfo.CardRating += (CardPulled.Level * 2);
+						}
+						else if (CardPulled.Tier === 6){
+							QueryPlayerInfo.CardRating += (CardPulled.Level * 5);
+						} else {
+							QueryPlayerInfo.CardRating += CardPulled.Level;
+						}
+
+						switch (PullType) {
+							case "Daily":
+								QueryPlayerInfo.LastPull = new Date();
+								break;
+						
+							case "RP":
+								QueryPlayerInfo.RecycledPoints -= RPcost;
+								break;
+						}
+
+                        SortCards(QueryPlayerInfo)
+						await QueryPlayerInfo.save();
+
+						let CardEmbed = GenCardEmbed(CardPulled, InfoSetQuery);
+						let embedMessage = await interaction.editReply({ content: 'You have **' + String(QueryPlayerInfo.RecycledPoints) + '** Recycle Points left and you pulled: ', embeds: [CardEmbed],ephemeral: false });
+						return
+					}
+
+				}
+				else {
+
+					Message = await interaction.editReply({ content: 'No set to Pull from found.', ephemeral: false });
+				}
+
+			}
+
+const NumberOfUniqueCards = 159
+		
+	
+
+
 
 module.exports = {
 	GoldAtLevel,
@@ -575,6 +924,7 @@ module.exports = {
 	CharacterEmbedColor,
 	ConfirmEmbedColor,
 	ReportEmbedColor,
+	NumberOfUniqueCards,
 	CharacterData,
 	PlayerData,
 	ReportData,
@@ -590,4 +940,8 @@ module.exports = {
 	ConfirmRow,
 	AutoCalcSlots,
 	SortCards,
+	WeekNumber,
+	NumberTierToString,
+	StringTierToNumber,
+	PullCard,
 };

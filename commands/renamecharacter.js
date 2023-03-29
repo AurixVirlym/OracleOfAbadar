@@ -17,7 +17,8 @@ module.exports = {
 	data: new SlashCommandBuilder().setName('renamecharacter')
     .setDescription('Renames a character which you own.')
     .addStringOption(option => option.setName('oldname').setDescription('Current Character Name, case sensitive.').setMinLength(1).setMaxLength(32).setRequired(true))
-    .addStringOption(option => option.setName('newname').setDescription('New Character Name, case sensitive.').setMinLength(1).setMaxLength(30).setRequired(true)),
+    .addStringOption(option => option.setName('newname').setDescription('New Character Name, case sensitive.').setMinLength(1).setMaxLength(30).setRequired(true))
+	.addUserOption(option => option.setName('mention').setDescription('Player discord @mention.')),
 
 	async execute(interaction,client) {
 
@@ -27,9 +28,25 @@ module.exports = {
 		const NewCharName = interaction.options.getString('newname').replace(/[\\@#&!`*_~<>|]/g, '');
 
 
-		const PlayerDiscordID = interaction.user.id;
-		const PlayerDiscordMention = '<@' + PlayerDiscordID + '>';
+		let PlayerDiscordData= interaction.options.getUser('mention');
 
+		let PlayerDiscordID, PlayerDiscordMention, PlayerName
+
+		if (PlayerDiscordData == null) {
+			 PlayerDiscordID = interaction.user.id;
+			 PlayerDiscordMention = '<@' + PlayerDiscordID + '>';
+			 PlayerName = interaction.user
+		}
+
+		else {
+			PlayerDiscordID = PlayerDiscordData.id
+			PlayerDiscordMention = '<@' + PlayerDiscordID + '>'
+			PlayerName = PlayerDiscordData
+		}
+
+		if (typeof PlayerName === undefined) {
+			return
+		}
 
 		if (OldCharName == null || NewCharName == null) {
 			await interaction.editReply({ content: 'Not all inputs given.' });
@@ -62,8 +79,8 @@ module.exports = {
 
 
 				const QueryPlayerInfo = await PlayerData.findOne({ DiscordId: PlayerDiscordMention });
-				const QueryCharInfo = await CharacterData.findOne({ Name: OldCharName });
-				const NewNameCheck = await CharacterData.findOne({ Name: NewCharName });
+				const QueryCharInfo = await CharacterData.findOne({ Name: OldCharName, BelongsTo: PlayerDiscordMention});
+				const NewNameCheck = await CharacterData.findOne({ Name: NewCharName, BelongsTo: PlayerDiscordMention});
 
 
 				if (QueryPlayerInfo != null && QueryCharInfo != null && NewNameCheck == null) {

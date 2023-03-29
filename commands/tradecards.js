@@ -25,7 +25,7 @@ module.exports = {
 		// buyee = person being asked to trade
 		let TraderDiscordID = interaction.user.id;
 		let TraderDiscordMention = '<@' + TraderDiscordID + '>';
-		let TraderName = await client.users.fetch(TraderDiscordID);
+		
 
 		let TraderCard = interaction.options.getString('offer');
 		let BuyeeCard = interaction.options.getString('want');
@@ -42,7 +42,7 @@ module.exports = {
 		}
 
 
-		if (TraderName !== undefined && BuyeeName === undefined) {
+		if (BuyeeName === undefined) {
 			
 			return
 		}
@@ -158,7 +158,8 @@ module.exports = {
 
 							if (TraderCardOnBuyeeList == -1) {
 
-								QueryBuyeeInfo.CardCollection.push({ CardName: QueryTraderInfo.CardCollection[TraderCardOnList].CardName, CardTag: TraderCard, quantity: 1 });
+								
+								QueryBuyeeInfo.CardCollection.push({ CardName: QueryTraderInfo.CardCollection[TraderCardOnList].CardName, CardTag: TraderCard, quantity: 1, CardLevel: QueryTraderInfo.CardCollection[TraderCardOnList].CardLevel, CardType: QueryTraderInfo.CardCollection[TraderCardOnList].CardType,  });
 
 								QueryTraderInfo.CardCollection[TraderCardOnList].quantity -= 1;
 
@@ -173,7 +174,7 @@ module.exports = {
 
 							if (BuyeeCardOnTraderList == -1) {
 
-								QueryTraderInfo.CardCollection.push({ CardName: QueryBuyeeInfo.CardCollection[BuyeeCardOnList].CardName, CardTag: BuyeeCard, quantity: 1 });
+								QueryTraderInfo.CardCollection.push({ CardName: QueryBuyeeInfo.CardCollection[BuyeeCardOnList].CardName, CardTag: BuyeeCard, quantity: 1, CardLevel: QueryBuyeeInfo.CardCollection[BuyeeCardOnList].CardLevel, CardType: QueryBuyeeInfo.CardCollection[BuyeeCardOnList].CardType });
 
 								QueryBuyeeInfo.CardCollection[BuyeeCardOnList].quantity -= 1;
 								
