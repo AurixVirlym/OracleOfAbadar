@@ -11,7 +11,7 @@
   "dependencies": {
     "@discordjs/rest": "^1.0.1",
     "customizable-discordjs-pagination": "^2.0.1",
-    "discord.js": "^14.1.2",
+    "discord.js": "^14.8.0",
     "discordjs-button-embed-pagination": "^4.0.3",
     "discordjs-button-pagination": "^1.0.7",
     "image-url-validator": "^1.0.4",
