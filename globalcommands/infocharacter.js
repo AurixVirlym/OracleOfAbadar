@@ -16,29 +16,41 @@ const isImageURL = require('image-url-validator').default;
 module.exports = {
 	data: new SlashCommandBuilder().setName('infocharacter')
 	.setDescription('Gives information on a given character of a player')
-	.addStringOption(option => option.setName('character').setDescription('Character Name').setMinLength(1).setMaxLength(30).setRequired(true))
+	.addStringOption(option => option.setName('character').setDescription('Character Name').setMinLength(1).setMaxLength(30))
 	.addUserOption(option => option.setName('mention').setDescription('Player Mention'))
 	.addBooleanOption(option => option.setName('mobile').setDescription('Do you wish to compress the display? Better for Mobile')),
 
-	async execute(interaction) {
+	async execute(interaction,client,ContextUser,EphemeralCheck) {
 
-		await interaction.deferReply();
+		if (EphemeralCheck == null){
+			EphemeralCheck = false
+		}
+	
+		await interaction.deferReply( {ephemeral: EphemeralCheck});
 
 		let RemoveSpacesForMobile = interaction.options.getBoolean('mobile');
 		const CharName = interaction.options.getString('character');
 		const PlayerDiscordData= interaction.options.getUser('mention');
 
-		let PlayerDiscordID, PlayerDiscordMention, PlayerName
+		let PlayerDiscordID, PlayerDiscordMention, PlayerName, PlayerDiscordGiven
+
+		if (ContextUser != null){
+			PlayerDiscordID = ContextUser
+			PlayerDiscordMention = '<@' + PlayerDiscordID + '>';
+			PlayerName = interaction.user
+		} else
 
 		if (PlayerDiscordData == null) {
 			 PlayerDiscordID = interaction.user.id;
 			 PlayerDiscordMention = '<@' + PlayerDiscordID + '>';
+			 PlayerDiscordGiven = false
 			 PlayerName = interaction.user
 		}
 
 		else {
 			PlayerDiscordID = PlayerDiscordData.id
 			PlayerDiscordMention = '<@' + PlayerDiscordID + '>'
+			PlayerDiscordGiven = true
 			PlayerName = PlayerDiscordData
 		}
 
@@ -52,17 +64,7 @@ module.exports = {
 		}
 
 
-		
-		if (CharName == null) {
-			await interaction.editReply({ content: 'Not all inputs given.' });
-			return;
-		}
-		if (typeof CharName === undefined) {
-			return;
-		}
-		const QueryCharacterInfo = await CharacterData.findOne({ Name: { "$regex": CharName, "$options": "i" }, BelongsTo: PlayerDiscordMention });
-
-		if (QueryCharacterInfo != null) {
+		async function CreateInfoCharacter(QueryCharacterInfo,MultiChar) {
 
 			const DiscordNameToDisplay = QueryCharacterInfo.BelongsTo
 			const CalcedGoldSpent = (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold).toFixed(2);
@@ -234,6 +236,12 @@ module.exports = {
 				)
 				.setThumbnail(URLimage)
 				.setFooter({ text: 'Absalom Living Campaign' });
+			
+			if (MultiChar == true){
+				InfoCharEmbed.addFields(
+					{ name: 'Please ignore "This Interaction Failed."', value: "Everything works. Just give it a second." },
+				)
+			}
 
 
 			const rowindex = new ActionRowBuilder()
@@ -286,6 +294,7 @@ module.exports = {
 			let StringApprovalLog, StringPurchaseLog
 
 			collector.on('collect', async interaction => {
+				
 
 				if (interaction.customId === 'sessionreports') {
 		
@@ -462,6 +471,88 @@ module.exports = {
 				}
 			});
 		}
+
+		let QueryCharactersInfo;
+		
+		if (CharName == null) {
+			QueryCharactersInfo = await CharacterData.find({ BelongsTo: PlayerDiscordMention });
+		} else if (PlayerDiscordGiven == true){
+			QueryCharactersInfo = await CharacterData.find({ Name: { "$regex": CharName, "$options": "i" }, BelongsTo: PlayerDiscordMention });
+		} else if (CharName.length >= 2) {
+			QueryCharactersInfo = await CharacterData.find({ Name: { "$regex": CharName, "$options": "i" } });
+		} else {
+			await interaction.editReply({ content: 'No such character in database or other error. If using partial search, use at least two letters or add player mention.' })
+			return 
+		}
+		
+		if (QueryCharactersInfo != null && QueryCharactersInfo.length > 1){
+			let MultipleCharacterString =""
+
+			const rowcharacterselect1 = new ActionRowBuilder()
+			const rowcharacterselect2 = new ActionRowBuilder()
+			
+			for (let index = 0; index < QueryCharactersInfo.length; index++) {
+				const Character = QueryCharactersInfo[index];
+				MultipleCharacterString += index + ". " + Character.BelongsTo + " - " + Character.Name +"\n"
+
+				if (index < 5){
+					rowcharacterselect1.addComponents(
+						new ButtonBuilder()
+							.setCustomId(String(index))
+							.setLabel(String(index) + ". " + Character.Name)
+							.setStyle(ButtonStyle.Primary))
+				} else {
+
+				 rowcharacterselect2.addComponents(
+					new ButtonBuilder()
+						.setCustomId(String(index))
+						.setLabel(String(index) + ". " + Character.Name)
+						.setStyle(ButtonStyle.Primary))
+					}
+
+				if (index >= 9){
+					MultipleCharacterString += "...and so on. Narrow down your search."
+					break
+				}
+			}
+			let rowscharacterselect ;
+			if (QueryCharactersInfo.length > 5 ){
+				rowscharacterselect = [rowcharacterselect1,rowcharacterselect2]
+			} else {
+				rowscharacterselect = [rowcharacterselect1]
+			}
+		
+
+			
+			const MutlipleCharEmbed = new EmbedBuilder()
+				.setColor(CharacterEmbedColor)
+				.setTitle(bold(QueryCharactersInfo.length + " Characters Have Been Found."))
+				.setDescription(MultipleCharacterString)
+				.setTimestamp()
+				.setFooter({ text: 'Absalom Living Campaign' });
+
+			embedMessage = await interaction.editReply({ embeds: [MutlipleCharEmbed], components: rowscharacterselect });
+
+			let Multicollector = embedMessage.createMessageComponentCollector({
+				filter: ({ user }) => user.id === interaction.user.id, time: CollecterTimeout,
+			});
+
+	
+
+			Multicollector.on('collect', async interaction => {
+				
+				CreateInfoCharacter(QueryCharactersInfo[interaction.customId],true)
+				QueryCharactersInfo = null
+				Multicollector.stop();
+
+			}
+			)
+		}
+
+
+		else if (QueryCharactersInfo != null && QueryCharactersInfo.length == 1) {
+			CreateInfoCharacter(QueryCharactersInfo[0],false)
+	}
 		else {
 			await interaction.editReply({ content: 'No such character in database or other error.' });
 		}

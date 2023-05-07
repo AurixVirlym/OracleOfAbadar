@@ -181,6 +181,10 @@ module.exports = {
 						if (InfoSetQuery.CardPool[0][CardCID].Tier === 6) {
 							SpecialMultipler = 5;
 					   }
+					   
+					   if (InfoSetQuery.Tag === "FOOL") {
+						SpecialMultipler = 1;
+				   }
 
 						const RPtoGIVE = InfoSetQuery.CardPool[0][CardCID].Level * SpecialMultipler * ProcessedQty;
 

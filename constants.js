@@ -696,7 +696,7 @@ async function PullCard(interaction,QueryPlayerInfo,SetsToPull,PullType,RPcost,R
 				{PullTier = 7;}
 				else
 
-				if (RngValue >= 95) // special pull
+				if (RngValue >= RarityOdds.Special) // special pull
 				{PullTier = 6;}
 				else
 
@@ -906,7 +906,7 @@ async function PullCard(interaction,QueryPlayerInfo,SetsToPull,PullType,RPcost,R
 
 			}
 
-const NumberOfUniqueCards = 159
+const NumberOfUniqueCards = 163
 		
 	
 

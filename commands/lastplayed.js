@@ -17,7 +17,7 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 module.exports = {
 	data: new SlashCommandBuilder().setName('lastplayed')
     .setDescription('See how many games each player played in the last X days.')
-    .addNumberOption(option => option.setName('days').setDescription('How many days from today should be checked?').setMinValue(1).setMaxValue(100))
+    .addNumberOption(option => option.setName('days').setDescription('How many days from today should be checked?').setMinValue(1))
     .addStringOption(option => option.setName('sort').setDescription('How you wish to sort your played or ran games.').addChoices(
         { name: 'Games Played', value: 'played' },
         { name: 'Games Ran', value: 'ran' },
@@ -34,9 +34,18 @@ module.exports = {
 			await interaction.editReply({ content: 'You lack the role(s) to use this command.' });
 			return;
 		}
+
 		
 		let DaysAgoRequested = interaction.options.getNumber('days');
 		let SortMethod = interaction.options.getString('sort');
+
+		if (DaysAgoRequested > 100){
+		if (interaction.member.roles.cache.some(r => [RoleBotAdmin].includes(r.name))) {}
+		else {
+			await interaction.editReply({ content: 'Only a oracle admin can view days beyond a 100.' });
+			return;
+		}
+		}
 
 		if (DaysAgoRequested == null) {
 			DaysAgoRequested = 31;

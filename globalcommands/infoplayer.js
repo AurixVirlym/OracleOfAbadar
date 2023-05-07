@@ -23,6 +23,9 @@ module.exports = {
 	.addBooleanOption(option => option.setName('mobile').setDescription('Do you wish to compress the display? Better for Mobile')),
 	async execute(interaction,client,ContextUser,EphemeralCheck) {
 	
+		if (EphemeralCheck == null){
+			EphemeralCheck = false
+		}
 	
 		await interaction.deferReply( {ephemeral: EphemeralCheck});
 
@@ -35,10 +38,6 @@ module.exports = {
 			SeeRetiredChars = false
 		}
 
-		if (EphemeralCheck == null){
-			EphemeralCheck = false
-		}
-		
 		if (RemoveSpacesForMobile == null){
 			RemoveSpacesForMobile = false
 		}

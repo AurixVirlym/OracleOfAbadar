@@ -49,6 +49,7 @@ module.exports = {
 				Expert: 86,
 				Master: 101,
 				Legnadary: 101,
+				Special: 95
 			}
 
 			PullCard(interaction,QueryPlayerInfo,SetsToPull,PullType,0,RarityOdds)

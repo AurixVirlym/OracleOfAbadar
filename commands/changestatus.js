@@ -40,7 +40,7 @@ module.exports = {
 
         let CharName = interaction.options.getString('character');
 		let NewStatus = interaction.options.getString('status');
-		let ChangeAll = interaction.options.getString('allchars');
+		let ChangeAll = interaction.options.getBoolean('allchars');
 		let QueryCharInfo;
 		if (ChangeAll == null)
 		{
