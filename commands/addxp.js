@@ -15,7 +15,7 @@ module.exports = {
     .addStringOption(option => option.setName('character').setDescription('Character Name.').setMinLength(1).setMaxLength(32).setRequired(true))
     .addNumberOption(option => option.setName('xp').setDescription('The amount of XP to change.').setMinValue(-1000).setMaxValue(1000).setRequired(true))
 	.addUserOption(option => option.setName('mention').setDescription('Player discord @mention.')),
-	async execute(interaction) {
+	async execute(interaction,client) {
 
         await interaction.deferReply();
         
@@ -27,6 +27,7 @@ module.exports = {
 
 		let CharName = interaction.options.getString('character');
 		let XPtoAdd = Math.round(interaction.options.getNumber('xp'));
+		const PlayerDiscordData = interaction.options.getUser('mention');
 
 		let PlayerDiscordID, PlayerDiscordMention, PlayerName
 

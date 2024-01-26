@@ -20,14 +20,15 @@ module.exports = {
 
 		if (interaction.member.roles.cache.some(r => [RoleBotAdmin, RoleStaff, RolePlayerGM].includes(r.name))) {
 
-			let CharacterClasses = [{ name: 'Alchemist', value: 0 },
+			let CharacterClasses = [
+			{ name: 'Alchemist', value: 0 },
 			{ name: 'Barbarian', value: 0 },
 			{ name: 'Bard', value: 0 },
 			{ name: 'Champion', value: 0 },
 			{ name: 'Cleric', value: 0 },
 			{ name: 'Druid', value: 0 },
 			{ name: 'Fighter', value: 0 },
-			{ name :'Gunslinger', value: 0 },
+			{ name: 'Gunslinger', value: 0 },
 			{ name: 'Inventor', value: 0 },
 			{ name: 'Investigator', value: 0 },
 			{ name: 'Magus', value: 0 },

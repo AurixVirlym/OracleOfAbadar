@@ -2,11 +2,13 @@ const { SlashCommandBuilder, Routes } = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
 const { bold } = require('discord.js');
 const {
+	ConsumableBudgetAtLevel,
 	CollecterTimeout,
 	CharacterEmbedColor,
 	CharacterData,
 	ReportData,
 	EuroDateFunc,
+	FixStringForSearch,
 } = require('../constants.js');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const isImageURL = require('image-url-validator').default;
@@ -70,16 +72,21 @@ module.exports = {
 			const CalcedGoldSpent = (QueryCharacterInfo.MaxGold - QueryCharacterInfo.SpentGold).toFixed(2);
 			let CharInfoSting = DiscordNameToDisplay + bold('\nLevel: ' + QueryCharacterInfo.Level + ' - XP: ' + QueryCharacterInfo.CurrentXP + '/1000')
             + '\nGold: ' + CalcedGoldSpent + '/' + QueryCharacterInfo.MaxGold
+			+ '\nRenewable Budget: ' + (ConsumableBudgetAtLevel[QueryCharacterInfo.Level]-QueryCharacterInfo.SpentBudget)+ '/' + ConsumableBudgetAtLevel[QueryCharacterInfo.Level] + " gp"
             + '\nStatus: ' + QueryCharacterInfo.Status;
 
 
 			const AssignedReportInfo = [];
 			const PurchaseLogInfo = [];
 			const ApprovalLogInfo = [];
+			const ConsumableLogInfo = [];
+			const AssumedPotionsLog = []
 
 			let NumberOfReportsToPull = QueryCharacterInfo.AssignedReports.length;
 			let NumberOfPurchaseLogs = QueryCharacterInfo.PurchaseLog.length;
 			let NumberOfApprovalLogs = QueryCharacterInfo.ApprovalLog.length;
+			let NumberOfConsumableLogs = QueryCharacterInfo.ConsumableLog.length;
+			
 
 			for (let index = 0; index < NumberOfReportsToPull; index++) {
 
@@ -115,6 +122,60 @@ module.exports = {
 				else {
 					AssignedReportInfo.push('\n`***ERR*** - Failed To Find Report: ' + QueryCharacterInfo.AssignedReports[index] + '`');
 				}
+
+			}
+
+			for (let index = 0; index < NumberOfConsumableLogs; index++) {
+		
+
+				const Item = QueryCharacterInfo.ConsumableLog[index];
+
+				let SpacedIndex = String(index + ".")
+				let SpacedValue = String(Item.Value) + " gp"
+				let SpacedName = String(Item.Name)
+
+				if (RemoveSpacesForMobile == false){
+					while (SpacedName.length < 50) {
+						SpacedName += '\xa0'
+					}
+
+					while (SpacedValue.length < 8) {
+						SpacedValue += '\xa0'
+					}
+
+					while (SpacedIndex.length < 4) {
+						SpacedIndex += '\xa0'
+					}
+				}
+
+				let ConsuambleString= `${SpacedIndex} ${SpacedValue} - ${SpacedName}`
+				ConsuambleString = "\n`" + ConsuambleString + "`"
+				
+				ConsumableLogInfo.push(ConsuambleString);
+
+
+			}
+
+			if (ConsumableBudgetAtLevel[QueryCharacterInfo.Level]-QueryCharacterInfo.SpentBudget >= 4){
+
+				PotionBudget =  ConsumableBudgetAtLevel[QueryCharacterInfo.Level]-QueryCharacterInfo.SpentBudget
+				while (PotionBudget >= 400) {
+					PotionBudget -= 400
+					AssumedPotionsLog.push("\n`Healing Potion/Oil of Unlife (Greater) 400 gp`")
+				}
+				while (PotionBudget >= 50) {
+					PotionBudget -= 50
+					AssumedPotionsLog.push("\n`Healing Potion/Oil of Unlife (Moderate) 50 gp`")
+				}
+				while (PotionBudget >= 12) {
+					PotionBudget -= 12
+					AssumedPotionsLog.push("\n`Healing Potion/Oil of Unlife (Lesser) 12 gp`")
+				}
+				while (PotionBudget >= 4) {
+					PotionBudget -= 4
+					AssumedPotionsLog.push("\n`Healing Potion/Oil of Unlife (Minor) 4 gp`")
+				}
+				
 
 			}
 
@@ -155,6 +216,13 @@ module.exports = {
 				}
 
 				MainLine = "\n`" + MainLine + "`" 
+
+				if (Entry.Renewable == true && RemoveSpacesForMobile == false) {
+					MainLine += "\n`" + "██ RENEWABLE RECORD                                               " + "`" 
+				} else if  (Entry.Renewable == true) {
+					MainLine += "\n`" + "██ RENEWABLE RECORD" + "`" 
+				}
+				
 
 				for (let Item of Entry.Items) {
 					let SpacedValue = String(-Item.Value)
@@ -267,6 +335,10 @@ module.exports = {
 						.setLabel('Purchase Logs')
 						.setStyle(ButtonStyle.Primary),
 					new ButtonBuilder()
+						.setCustomId('consumablelog')
+						.setLabel('Renewable Log')
+						.setStyle(ButtonStyle.Primary),
+					new ButtonBuilder()
 						.setCustomId('sessionreports')
 						.setLabel('Session Reports')
 						.setStyle(ButtonStyle.Primary),
@@ -291,7 +363,7 @@ module.exports = {
 			let currentIndex = 0;
 			let MaxIndexDisplay = 10
 			let currentPage = 'characterinfo';
-			let StringApprovalLog, StringPurchaseLog
+			let StringApprovalLog, StringPurchaseLog, StringConsumableLog
 
 			collector.on('collect', async interaction => {
 				
@@ -301,9 +373,10 @@ module.exports = {
 					currentIndex = 0;
 					MaxIndexLength = AssignedReportInfo.length;
 					currentPage = interaction.customId;
+					MaxIndexDisplay = 10
 					StringToEmbed = bold('Level: ' + QueryCharacterInfo.Level + ' - XP: ' + QueryCharacterInfo.CurrentXP + '/1000')
-            + '\n**Session Reports** ' + AssignedReportInfo.slice(currentIndex, currentIndex + 10).toString().replace(/,/g, '');
-					MaxIndexDisplay = 16
+            + '\n**Session Reports** ' + AssignedReportInfo.slice(currentIndex, currentIndex + MaxIndexDisplay).toString().replace(/,/g, '');
+					
 				}
 
 
@@ -317,12 +390,34 @@ module.exports = {
 
 					while(StringPurchaseLog.length >= 3000){
 						MaxIndexDisplay -= 1
+						StringPurchaseLog = PurchaseLogInfo.slice(currentIndex, currentIndex + MaxIndexDisplay).toString()
 					}
 
-					StringPurchaseLog = PurchaseLogInfo.slice(currentIndex, currentIndex + MaxIndexDisplay).toString()
+					
 
 					StringToEmbed = '**Gold: ' + CalcedGoldSpent + '/' + QueryCharacterInfo.MaxGold + '**' +
             '\n**Purchase Log:** ' + StringPurchaseLog
+	
+
+				}
+
+				if (interaction.customId === 'consumablelog') {
+
+					currentIndex = 0;
+					MaxIndexLength = ConsumableLogInfo.length;
+					currentPage = interaction.customId;
+					MaxIndexDisplay = 10
+					StringConsumableLog = ConsumableLogInfo.slice(currentIndex, currentIndex + MaxIndexDisplay).toString()
+
+					while(StringConsumableLog.length >= 3000){
+						MaxIndexDisplay -= 1
+					}
+
+					StringConsumableLog = ConsumableLogInfo.slice(currentIndex, currentIndex + MaxIndexDisplay).toString()
+					StringAssumedPotionsLog = AssumedPotionsLog.toString()
+					StringToEmbed = '**Renewable Budget: ' + (ConsumableBudgetAtLevel[QueryCharacterInfo.Level]-QueryCharacterInfo.SpentBudget)+ '/' + ConsumableBudgetAtLevel[QueryCharacterInfo.Level] + '** gp' 
+					+'\n**Assumed Potions:**' + AssumedPotionsLog
+					+'\n**Renewable Inventory:** ' + StringConsumableLog
 	
 
 				}
@@ -392,6 +487,24 @@ module.exports = {
 				'\n**Purchase Log:** ' + StringPurchaseLog
 							break;
 
+						case 'consumablelog':
+							
+						MaxIndexDisplay = 10
+						StringConsumableLog = ConsumableLogInfo.slice(currentIndex, currentIndex + MaxIndexDisplay).toString()
+	
+						while(StringConsumableLog.length >= 2000){
+							MaxIndexDisplay -= 1
+							StringConsumableLog = ConsumableLogInfo.slice(currentIndex, currentIndex + MaxIndexDisplay).toString()
+						}
+	
+	
+						StringToEmbed = '**Renewable Budget: ' + (ConsumableBudgetAtLevel[QueryCharacterInfo.Level]-QueryCharacterInfo.SpentBudget)+ '/' + ConsumableBudgetAtLevel[QueryCharacterInfo.Level] + '** gp' 
+					+'\n**Assumed Potions:**' + AssumedPotionsLog
+					+'\n**Renewable Inventory:** ' + StringConsumableLog
+			
+
+							break;
+
 						case 'approvallog':
 							MaxIndexDisplay = 10
 							StringApprovalLog =  ApprovalLogInfo.slice(currentIndex, currentIndex + MaxIndexDisplay).toString();
@@ -406,10 +519,13 @@ module.exports = {
 							
 							break;
 
-						case 'reportdesc':
-							MaxIndexDisplay = 16
+						case 'sessionreports':
+
+							MaxIndexDisplay = 10
 							StringToEmbed = bold('Level: ' + QueryCharacterInfo.Level + ' - XP: ' + QueryCharacterInfo.CurrentXP + '/1000')
-            + '\n**Assigned Reports:**' + AssignedReportInfo.slice(currentIndex, currentIndex + MaxIndexDisplay).toString().replace(/,/g, '');
+         				   
+							+ '\n**Assigned Reports:**' + AssignedReportInfo.slice(currentIndex, currentIndex + MaxIndexDisplay).toString().replace(/,/g, '');
+							
 							break;
 						}
 					}
@@ -426,7 +542,7 @@ module.exports = {
 								.setTitle(bold( QueryCharacterInfo.Name))
 								.setDescription(DiscordNameToDisplay +"\n" +StringToEmbed)
 								.setTimestamp()
-								.setFooter({ text: FooterNoteForIndex + 'Absalom Living Campaign' }),
+								.setFooter({ text: FooterNoteForIndex + ' Absalom Living Campaign' }),
 							],
 
 							components: [rowinfochar, rowindex],
@@ -459,7 +575,7 @@ module.exports = {
 								.setTitle(bold(QueryCharacterInfo.Name))
 								.setDescription(DiscordNameToDisplay +"\n" +StringToEmbed)
 								.setTimestamp()
-								.setFooter({ text: FooterNoteForIndex + 'Absalom Living Campaign' }),
+								.setFooter({ text: FooterNoteForIndex + ' Absalom Living Campaign' }),
 							],
 
 							components: [rowinfochar],
@@ -477,9 +593,9 @@ module.exports = {
 		if (CharName == null) {
 			QueryCharactersInfo = await CharacterData.find({ BelongsTo: PlayerDiscordMention });
 		} else if (PlayerDiscordGiven == true){
-			QueryCharactersInfo = await CharacterData.find({ Name: { "$regex": CharName, "$options": "i" }, BelongsTo: PlayerDiscordMention });
+			QueryCharactersInfo = await CharacterData.find({ Name: { "$regex": FixStringForSearch(CharName), "$options": "i" }, BelongsTo: PlayerDiscordMention });
 		} else if (CharName.length >= 2) {
-			QueryCharactersInfo = await CharacterData.find({ Name: { "$regex": CharName, "$options": "i" } });
+			QueryCharactersInfo = await CharacterData.find({ Name: { "$regex": FixStringForSearch(CharName), "$options": "i" } });
 		} else {
 			await interaction.editReply({ content: 'No such character in database or other error. If using partial search, use at least two letters or add player mention.' })
 			return 

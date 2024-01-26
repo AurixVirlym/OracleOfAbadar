@@ -56,7 +56,7 @@ module.exports = {
 			return;
 		}
 
-		var	CharacterName =	CharacterName.replace(/[\\@#&!`*_~<>|]/g, '');
+		var	CharacterName =	CharacterName.replace(/[\\@#&!`*_~<>,|]/g, '');
 
 		if (typeof PlayerName != undefined) {
 			var QueryPlayerInfo = await PlayerData.findOne({ DiscordId: PlayerDiscordMention });
@@ -95,9 +95,11 @@ module.exports = {
 					TotalXP: 0,
 					ManualXP: 0,
 					SpentGold: 0,
+					SpentBudget: 0,
 					MaxGold: GoldAtLevel[StartingLevel],
 					Status: 'Awaiting Creation Approval', // basically options for holding info if a character is retired, active so on.
 					PurchaseLog: [],
+					ConsumableLog: [],
 					AssignedReports: [],
 					CardClass: 'Not Set.',
 					CardDescription: 'Not Set.',
@@ -105,6 +107,7 @@ module.exports = {
 					CardType: 'Not Set.',
 					CardAllowed: false,
 				};
+
 
 				let data = new CharacterData(item);
 				await data.save();

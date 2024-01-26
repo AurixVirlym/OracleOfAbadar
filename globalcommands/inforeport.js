@@ -6,6 +6,7 @@ const {
 	CharacterData,
 	PlayerData,
 	ReportData,
+	FixStringForSearch,
 } = require('../constants.js');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { bold } = require('discord.js');
@@ -34,7 +35,9 @@ module.exports = {
 
 		ReportName = ReportName.replace(/[\\@#&!`*_~<>|]/g, '');
 
-		const QueryReportInfo = await ReportData.findOne({ Name: { "$regex": ReportName, "$options": "i" } });
+		
+
+		const QueryReportInfo = await ReportData.findOne({ Name: { "$regex": FixStringForSearch(ReportName), "$options": "i" } });
 
 		if (QueryReportInfo !== null) {
 			const GMsOnList = [];
@@ -183,8 +186,9 @@ module.exports = {
 
 				}
 			});
-
-
+			
+		} else{
+				await interaction.editReply({ content: 'No report under that name found.' });	
 		}
         return
 

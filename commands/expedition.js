@@ -338,7 +338,6 @@ module.exports = {
 		let LuckyModifer = 0
 		let TypeDuplicateArray = []
 		let ExpeditionDC = (2 + (PickedTier*2)) + DifficultyDCModifer
-		let FullResultMessage = PickedExpedition.Description + "\n\n" + "DC of Expedition: **" + ExpeditionDC +"**\n" 
 
 		if (PickedTier == 1){
 			ExpeditionDC += -1
@@ -347,6 +346,10 @@ module.exports = {
 		if (PickedTier == 5) {
 			ExpeditionDC += 1
 		}
+
+		let FullResultMessage = PickedExpedition.Description + "\n\n" + "DC of Expedition: **" + ExpeditionDC +"**\n" 
+
+		
 
 		if (LuckyExpeditionCheck == true)
 		{

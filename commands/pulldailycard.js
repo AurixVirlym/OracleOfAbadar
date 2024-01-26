@@ -43,10 +43,10 @@ module.exports = {
                 return
 			}
 
-			let SetsToPull = ["GAMA","4EVA"]
+			let SetsToPull = ["DLTA","4EVA"]
 			let RarityOdds = {
-				Trained:  41,
-				Expert: 86,
+				Trained:  31,
+				Expert: 76,
 				Master: 101,
 				Legnadary: 101,
 				Special: 95

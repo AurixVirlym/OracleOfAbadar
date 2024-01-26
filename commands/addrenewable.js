@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, Routes } = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
 const {
+	ConsumableBudgetAtLevel,
 	CollecterTimeout,
 	ConfirmEmbedColor,
 	CharacterData,
@@ -13,25 +14,25 @@ const {
 
 
 module.exports = {
-	data: new SlashCommandBuilder().setName('purchase')
-    .setDescription('Purchases or sells an items on a character you own. Give a negative value to sell an item.')
+	data: new SlashCommandBuilder().setName('addrenewable')
+    .setDescription('Adds a renewable item to your character.')
     .addStringOption(option => option.setName('character').setDescription('Character Name').setMinLength(1).setMaxLength(30).setRequired(true))
-    .addStringOption(option => option.setName('1-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
-    .addNumberOption(option => option.setName('1-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
-	.addStringOption(option => option.setName('2-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
-    .addNumberOption(option => option.setName('2-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
-	.addStringOption(option => option.setName('3-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
-    .addNumberOption(option => option.setName('3-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
-	.addStringOption(option => option.setName('4-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
-    .addNumberOption(option => option.setName('4-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
-	.addStringOption(option => option.setName('5-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
-    .addNumberOption(option => option.setName('5-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
-	.addStringOption(option => option.setName('6-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
-    .addNumberOption(option => option.setName('6-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
-	.addStringOption(option => option.setName('7-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
-    .addNumberOption(option => option.setName('7-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999))
-	.addStringOption(option => option.setName('8-item').setDescription('Name of item purchased or sold.').setMinLength(1).setMaxLength(50))
-    .addNumberOption(option => option.setName('8-gp').setDescription('Gold spent/gained').setMinValue(-9999).setMaxValue(9999)),
+    .addStringOption(option => option.setName('1-item').setDescription('Name of renewable item.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('1-gp').setDescription('Cost of renewable item').setMinValue(0).setMaxValue(9999))
+	.addStringOption(option => option.setName('2-item').setDescription('Name of renewable item.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('2-gp').setDescription('Cost of renewable item').setMinValue(0).setMaxValue(9999))
+	.addStringOption(option => option.setName('3-item').setDescription('Name of renewable item.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('3-gp').setDescription('Cost of renewable item').setMinValue(0).setMaxValue(9999))
+	.addStringOption(option => option.setName('4-item').setDescription('Name of renewable item.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('4-gp').setDescription('Cost of renewable item').setMinValue(0).setMaxValue(9999))
+	.addStringOption(option => option.setName('5-item').setDescription('Name of renewable item.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('5-gp').setDescription('Cost of renewable item').setMinValue(0).setMaxValue(9999))
+	.addStringOption(option => option.setName('6-item').setDescription('Name of renewable item.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('6-gp').setDescription('Cost of renewable item').setMinValue(0).setMaxValue(9999))
+	.addStringOption(option => option.setName('7-item').setDescription('Name of renewable item.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('7-gp').setDescription('Cost of renewable item').setMinValue(0).setMaxValue(9999))
+	.addStringOption(option => option.setName('8-item').setDescription('Name of renewable item.').setMinLength(1).setMaxLength(50))
+    .addNumberOption(option => option.setName('8-gp').setDescription('Cost of renewable item').setMinValue(0).setMaxValue(9999)),
 
 	async execute(interaction,client) {
 
@@ -83,7 +84,7 @@ module.exports = {
 		}
 
 
-		EmbedString = 'Do you wish to buy/sell on "**' + CharName + '**"\n\n**Item List:**' + ConfirmItemList;
+		EmbedString = 'Do you wish to add these renewable items to "**' + CharName + '**"\n\n**Renewable List:**' + ConfirmItemList;
 
 		let ConfirmEmbed = new EmbedBuilder()
 			.setColor(ConfirmEmbedColor)
@@ -126,7 +127,7 @@ module.exports = {
 							Brought: 0,
 							Total: 0,
 							Items: MergedItem,
-							Renewable: false
+							Renewable: true
 						}
 						
 						for (const Entry of MergedItem) {
@@ -150,30 +151,24 @@ module.exports = {
 						
 
 
-						if (PurchaseEntry.Total > (QueryCharInfo.MaxGold - QueryCharInfo.SpentGold)){
-							await interaction.update({ content: 'You can not afford the purchases by ' + (PurchaseEntry.Total - (QueryCharInfo.MaxGold - QueryCharInfo.SpentGold)) + "gp." , embeds: [], components: [] });
+						if (PurchaseEntry.Total > (ConsumableBudgetAtLevel[QueryCharInfo.Level] - QueryCharInfo.SpentBudget)){
+							await interaction.update({ content: 'You can not afford to add these items by ' + (PurchaseEntry.Total - (ConsumableBudgetAtLevel[QueryCharInfo.Level] - QueryCharInfo.SpentBudget)) + "gp." , embeds: [], components: [] });
 							return
 						}
 
-						if (PurchaseEntry.Total < 0 && PurchaseEntry.Total < -QueryCharInfo.SpentGold){
-							await interaction.update({ content: 'Your sell values are greater than the items you have listed as having purchased.' , embeds: [], components: [] });
-							return
-						}
-
-						
-						
-						
-						
-						
 						
 						QueryCharInfo.PurchaseLog.push(PurchaseEntry)
-						
-						QueryCharInfo.SpentGold += PurchaseEntry.Total
-						QueryCharInfo.SpentGold = QueryCharInfo.SpentGold.toFixed(2)
-						QueryCharInfo.SpentGold = Number.parseFloat(QueryCharInfo.SpentGold)
+
+						for (const Entry of MergedItem) {
+						QueryCharInfo.ConsumableLog.push(Entry)
+						}
+
+						QueryCharInfo.SpentBudget += PurchaseEntry.Total
+						QueryCharInfo.SpentBudget = QueryCharInfo.SpentBudget.toFixed(2)
+						QueryCharInfo.SpentBudget = Number.parseFloat(QueryCharInfo.SpentBudget)
 						
 
-						EmbedString = 'Purchased/Sold on "**' + CharName + '**"\n\n**Item List:**' + ConfirmItemList;
+						EmbedString = 'Added Renewables on "**' + CharName + '**"\n\n**Renewables List:**' + ConfirmItemList;
 
 						await QueryCharInfo.save()
 
@@ -195,7 +190,7 @@ module.exports = {
 
 				}
 				else {
-					await interaction.update({ content: 'Did not find all the database entries. Check for typos.', embeds: [], components: [] });
+					await interaction.update({ content: 'Did not find all the database entries. Check for typos or character did not belong to you.', embeds: [], components: [] });
 					break;
 				}
 				collector.stop();

@@ -11,7 +11,10 @@ const isImageURL = require('image-url-validator').default;
 
 module.exports = {
 	data: new SlashCommandBuilder().setName('createcardset')
-    .setDescription('Admin ONLY.'),
+    .setDescription('Admin ONLY.')
+	.addStringOption(option => option.setName('tag').setDescription('Set Tag').setMinLength(4).setMaxLength(4).setRequired(true))
+	.addStringOption(option => option.setName('set').setDescription('Set Name').setMinLength(1).setMaxLength(60).setRequired(true)),
+	
 
 	async execute(interaction,client) {
 
@@ -22,6 +25,9 @@ module.exports = {
 			await interaction.editReply({ content: 'You lack the role(s) to use this command.' });
 			return;
 		}
+
+		const SetName = interaction.options.getString('set');
+		const SetTag = interaction.options.getString('tag');
 
 		let AllReadyCards = [
 			[],
@@ -38,6 +44,7 @@ module.exports = {
 			CardClass:{ $exists: true, $ne: 'Not Set.' },
 			CardImage:{ $exists: true, $ne: 'Not Set.' },
 			CardType:{ $exists: true, $ne: 'Not Set.' },
+			TotalXP: { $exists: true, $ne: 0 },
 			Status: 'Approved' }).then((CharacterDatas) => {
 			CharacterDatas.forEach(async (CharacterData) => {
 				const CardTier = Math.ceil(CharacterData.Level / 2);
@@ -55,7 +62,7 @@ module.exports = {
 					Description: CharacterData.CardDescription,
 					Type: CharacterData.CardType,
 					Special: false,
-					Tag: "TEST"
+					Tag: SetTag
 				};
 
 				switch (CardTier) {
@@ -85,6 +92,7 @@ module.exports = {
 
 				AllReadyCards[0].push(Card);
 				AllReadyCards[CardTier].push(NumberIndex);
+				console.log(`${NumberIndex}. ${Card.Name} as ${Card.Rarity} added`)
 				NumberIndex += 1;
 			}
 			});
@@ -104,9 +112,9 @@ module.exports = {
 		CardSet = {
 			CardPool: AllReadyCards,
 			CardPoolSize: AllReadyCards[0].length,
-			Name: 'NEW CARD Card Pool',
+			Name: SetName,
 			Icon: 'https://cdn.discordapp.com/attachments/1006650762035728424/1055186205752434791/Oracle.webp',
-			Tag: 'NEEW',
+			Tag: SetTag,
 			Created: Date(),
 			Active: false,
 			Specials: [SpecialOne, SpecialTwo],
@@ -117,7 +125,7 @@ module.exports = {
 		await data.save();
 
 		await interaction.editReply({
-			content: 'NEW CARD SET MADED'});
+			content: `NEW CARD SET "${SetName}" - ${SetTag} MADED`});
             return;
 
 

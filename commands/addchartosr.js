@@ -120,14 +120,15 @@ module.exports = {
 				CharsAddToReport(CharsFromMessage, UsersFromMessage, ReportName, interaction);
 				
 				collector.stop();
-
+				return
 				break;
 
 			case 'no':
-				await interaction.editReply({
+				await interaction.update({
 					content: 'Cancelled.', embeds: [], components: [],
 				});
 				collector.stop();
+				return
 				break;
 
 			}

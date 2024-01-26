@@ -22,6 +22,7 @@ module.exports = {
         { name :'Gunslinger', value: 'Gunslinger' },
         { name: 'Inventor', value: 'Inventor' },
         { name: 'Investigator', value: 'Investigator' },
+		{ name: 'Kineticist', value: 'Kineticist' },
         { name: 'Magus', value: 'Magus' },
         { name: 'Monk', value: 'Monk' },
         { name: 'Oracle', value: 'Oracle' },

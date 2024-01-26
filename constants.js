@@ -11,6 +11,20 @@ const { bold, italic, strikethrough, underscore, spoiler, quote, blockQuote } = 
 const GoldAtLevel = [0, 20, 40, 80, 140, 260, 460, 749, 1140, 1640, 2340];
 const GoldPerXP = [0, 5, 10, 15, 30, 50, 70, 100, 125, 175, 225];
 
+const ConsumableBudgetAtLevel = [
+	0,
+	1,
+	2,
+	5,
+	10,
+	15,
+	25,
+	40,
+	60,
+	80,
+	120,
+]
+
 const RoleBotAdmin = 'Bot Admin';
 const RoleStaff = 'Staff';
 const RolePlayerGM = 'Player GM';
@@ -87,9 +101,11 @@ const CharacterSchema = new mongoose.Schema({
 	TotalXP: Number,
 	ManualXP: Number,
 	SpentGold: Number,
+	SpentBudget: Number,
 	MaxGold: Number,
 	Status: { type: String, required: true }, // basically options for holding info if a character is retired, active so on.
 	PurchaseLog: Array,
+	ConsumableLog: Array,
 	ApprovalLog: Array,
 	AssignedReports: Array, // used to figure out so reports are given to the character.
 	CardClass: String,
@@ -567,6 +583,37 @@ function AutoCalcSlots(QueryPlayerInfo) {
 
 }
 
+function XPneededForNextSlot(QueryPlayerInfo) {
+
+	let CurrentSlots = QueryPlayerInfo.CharacterSlots
+	let XPneeded = 2000
+
+	if (QueryPlayerInfo.CharacterSlots < 6){
+		XPneeded = 2000 * (CurrentSlots - 1)
+	} else
+
+	{
+		XPneeded = 8000 
+		for (let index = 0; index < CurrentSlots - 5 ; index++) {
+			
+			XPneeded += ((index+2) * 2000) 
+		}
+		
+		
+	}
+
+	XPneeded -= QueryPlayerInfo.TotalXP
+	XPneeded = "In " + String(XPneeded) + " XP"
+
+	if (QueryPlayerInfo.FirstSR === false){
+		XPneeded = "In One Session"
+	}
+
+	return XPneeded
+
+
+}
+
 
 function NumberTierToString(tier) {
 	switch (tier) {
@@ -906,15 +953,22 @@ async function PullCard(interaction,QueryPlayerInfo,SetsToPull,PullType,RPcost,R
 
 			}
 
-const NumberOfUniqueCards = 163
-		
+			function FixStringForSearch (string) {
 	
+				   return string.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+			}
+
+
+const NumberOfUniqueCards = 255
+		
 
 
 
 module.exports = {
+	FixStringForSearch,
 	GoldAtLevel,
 	GoldPerXP,
+	ConsumableBudgetAtLevel,
 	RoleBotAdmin,
 	RoleStaff,
 	RolePlayerGM,
@@ -944,4 +998,5 @@ module.exports = {
 	NumberTierToString,
 	StringTierToNumber,
 	PullCard,
+	XPneededForNextSlot,
 };

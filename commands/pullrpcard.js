@@ -9,9 +9,10 @@ module.exports = {
 	data: new SlashCommandBuilder().setName('pullrpcard')
     .setDescription('Gives one card. Requires RP to use.')
 	.addStringOption(option => option.setName('set').setDescription('The set you wish to pull, defaults to the newest set.').addChoices(
-        { name: 'BETA - 10 RP', value: 'BETA' },
-		{ name: 'GAMMA - 10 RP', value: 'GAMA' },
-		{ name: 'ANY SET - 9 RP', value: 'MIXED' },
+        { name: 'BETA - 12 RP', value: 'BETA' },
+		{ name: 'GAMMA - 10 RP', value: 'GAMMA' },
+		{ name: 'DELTA - 10 RP', value: 'DELTA' },
+		{ name: 'ANY SET - 8 RP', value: 'MIXED' },
 		{ name: 'FOOL (Only on 1st and 2nd of April.) - 5 RP', value: 'FOOL' },
 		{ name: 'Eternal Only - 999 RP', value: '4EVA' },
 		)),
@@ -33,7 +34,7 @@ module.exports = {
 		switch (SetChoice) {
 			case 'BETA':
 				SetsToPull = ["BETA","4EVA"]
-				RPcost = 10
+				RPcost = 12
 				RarityOdds = {
 					Trained:  75,
 					Expert: 101,
@@ -54,6 +55,18 @@ module.exports = {
 					Special: 95
 				}
 				break;
+			
+			case 'DELTA':
+				SetsToPull = ["DLTA","4EVA"]
+				RPcost = 10
+				RarityOdds = {
+					Trained:  41,
+					Expert: 86,
+					Master: 101,
+					Legnadary: 101,
+					Special: 95
+				}
+					break;
 
 			case 'MIXED':
 				SetsToPull = ["BETA","GAMA","4EVA"]
@@ -64,7 +77,7 @@ module.exports = {
 					Legnadary: 101,
 					Special: 95
 				}
-				RPcost = 9
+				RPcost = 8
 				break;
 			
 			case '4EVA':
@@ -78,7 +91,8 @@ module.exports = {
 				}
 				RPcost = 999
 				break;
-				case 'FOOL':
+			
+			case 'FOOL':
 					let CurrentDate = EuroDateFunc(new Date());
 					if (CurrentDate.includes("01/04") || CurrentDate.includes("02/04")){
 					SetsToPull = ["4EVA","FOOL"]
@@ -97,14 +111,14 @@ module.exports = {
 					break;
 		
 			default:
-				SetsToPull = ["GAMA","4EVA"]
+				SetsToPull = ["DLTA","4EVA"]
 				RPcost = 10
 				RarityOdds = {
-					Trained:  41,
-					Expert: 86,
+					Trained:  31,
+					Expert: 76,
 					Master: 101,
 					Legnadary: 101,
-					Special: 95,
+					Special: 95
 				}
 				break;
 		}

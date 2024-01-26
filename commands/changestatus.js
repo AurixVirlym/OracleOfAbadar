@@ -4,6 +4,7 @@ const {
 	RoleStaff,
 	PlayerData,
     CharacterData,
+	FixStringForSearch,
 
 } = require('../constants.js');
 
@@ -95,7 +96,7 @@ module.exports = {
 
 		}
 		else if (typeof CharName != undefined) {
-			QueryCharInfo = await CharacterData.findOne({ Name: { "$regex": CharName, "$options": "i" }, BelongsTo: PlayerDiscordMention });
+			QueryCharInfo = await CharacterData.findOne({ Name: { "$regex": FixStringForSearch(CharName), "$options": "i" }, BelongsTo: PlayerDiscordMention });
 
 		}
 		else {

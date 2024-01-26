@@ -9,6 +9,7 @@ const {
 	AutoCalcSlots,
 	SortCards,
 	NumberOfUniqueCards,
+	XPneededForNextSlot,
 } = require('../constants.js');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { bold } = require('discord.js');
@@ -157,11 +158,14 @@ module.exports = {
 
 			await QueryPlayerInfo.save();
 
-			let StringToEmbed = '\n\n**Characters:**' + CharInfo.slice(0, 6).toString().replace(/,/g, '');
+			let NextCharXP = XPneededForNextSlot(QueryPlayerInfo)
+
+			let StringToEmbed = '\n\n**Characters:**' + CharInfo.slice(0, 7).toString().replace(/,/g, '');
 
 			const PlayerInfoSting = `${PlayerDiscordMention}\n`+bold(
 				'Total XP: ' + QueryPlayerInfo.TotalXP
         + ' - Character Slots: ' + (AllOwnedCharsNumber - RetiredCharsNumber) + '/' + QueryPlayerInfo.CharacterSlots
+		+ '\nNext Slot: ' + NextCharXP
         + '\nCharacter XP: ' + QueryPlayerInfo.CharacterXP
         + ' - Report XP: ' + QueryPlayerInfo.ReportXP
         + ' - GM XP: ' + QueryPlayerInfo.GMXP,

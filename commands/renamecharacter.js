@@ -25,7 +25,7 @@ module.exports = {
         await interaction.deferReply();
 
         const OldCharName = interaction.options.getString('oldname');
-		const NewCharName = interaction.options.getString('newname').replace(/[\\@#&!`*_~<>|]/g, '');
+		const NewCharName = interaction.options.getString('newname').replace(/[\\@#&!`*_~<>,|]/g, '');
 
 
 		let PlayerDiscordData= interaction.options.getUser('mention');
