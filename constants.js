@@ -85,6 +85,7 @@ const ReportSchema = new mongoose.Schema({
 	XP: Number, // default 250 but add option
 	Description: { type: String, required: true }, // think news and net
 	GMs: Array, // anyone who gets unassigned xp.
+	FreeAssign: Array, // 
 	Characters: Array, // id.
 	SSR: Boolean,
 	Published: { type: Boolean, required: true }, // to determine if the Report should in players hands.
@@ -419,6 +420,60 @@ async function GMsAddToReport(GMsToAddArray, ReportToQuery, interaction) {
 return
 }
 
+async function FreeAssigneeAddToReport(FreeAssignPlayerToAddArray, ReportToQuery, interaction) {
+	await interaction.deferUpdate();
+	let StringToReply = 'Free Assign(s) added:\n';
+	const QueryReportInfo = await ReportData.findOne({ Name: ReportToQuery });
+	
+	if (QueryReportInfo !== null && FreeAssignPlayerToAddArray !== undefined) {
+
+		if (QueryReportInfo.SSR === true) {
+			await interaction.editReply({ content: 'Report is an SSR.', embeds: [], components: [] });
+			return;
+		}
+
+		if (QueryReportInfo.Published === false) {
+
+			FreeAssignPlayerToAddArray = FreeAssignPlayerToAddArray.filter(function(el) {
+				return el != null;
+			});
+
+
+			if (FreeAssignPlayerToAddArray !== null) {
+
+
+				for (const Element of FreeAssignPlayerToAddArray) {
+					let SameCheck = false;
+					QueryGMInfo = await PlayerData.findOne({ DiscordId: Element });
+
+					if (QueryGMInfo !== null && typeof QueryGMInfo !== undefined) {
+						SameCheck = await QueryReportInfo.FreeAssign.includes(QueryGMInfo._id);
+
+						if (SameCheck == false) {
+							StringToReply += QueryGMInfo.DiscordId + ' to ' + QueryReportInfo.Name + '.\n';
+							QueryReportInfo.FreeAssign.push(QueryGMInfo._id);
+
+						}
+						else {(StringToReply += QueryGMInfo.DiscordId + ' already is in ' + QueryReportInfo.Name + 'as a free assignee.\n');}
+
+					}
+					else {(StringToReply += 'Player: ' + Element + ' does not exist.\n');}
+				}
+
+				await QueryReportInfo.save();
+
+
+
+			}
+			else {StringToReply = 'No player found.';}
+		}
+		else {StringToReply = 'Report already published.';}
+	}
+	else {StringToReply = 'Report not found.';}
+	await interaction.editReply({ content: StringToReply, embeds: [], components: [] });
+return
+}
+
 
 async function PublishSR(QueryReportInfo, interaction) {
 	let QueryCharacterInfos = []
@@ -472,6 +527,39 @@ async function PublishSR(QueryReportInfo, interaction) {
 				}else {
 				return 'No GM found on Report.'
 			}
+
+			if (QueryReportInfo.FreeAssign !== null) {
+
+				let QueryPlayerInfos = await PlayerData.find({
+					'_id': { 
+						$in: QueryReportInfo.FreeAssign
+					}
+					})
+						
+					for (let QueryPlayerInfo of QueryPlayerInfos) {
+
+						if (QueryPlayerInfo !== null) {
+
+							QueryPlayerInfo.UnassignedReports.push(QueryReportInfo._id);
+	
+							QueryPlayerInfo.ReportXP += QueryReportInfo.XP;
+	
+							StringToReply += '\nGave report ***"' + QueryReportInfo.Name + '"*** to ' + QueryPlayerInfo.DiscordId + ' as an unassigned report.';
+	
+							QueryPlayerInfo.FirstSR = true
+	
+							await QueryPlayerInfo.save();
+							ProcessSuccess += 1;
+	
+						}
+						else {
+							StringToReply += '\nA Database ID was not found.';
+							console.log("SSR Making fucked, missing a Database ID.")
+						}
+						
+					}
+							
+				}
 
 			
 			if (CharsToReward !== null) {
@@ -999,4 +1087,5 @@ module.exports = {
 	StringTierToNumber,
 	PullCard,
 	XPneededForNextSlot,
+	FreeAssigneeAddToReport,
 };

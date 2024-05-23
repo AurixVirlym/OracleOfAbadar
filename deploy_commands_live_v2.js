@@ -1,5 +1,5 @@
 const { REST, Routes } = require('discord.js');
-const { clientIdlive, guildIdlive, tokenlive } = require('./config.json');
+const { clientIdlive, guildIdlive, tokenlive } = require('./config - live.json');
 const fs = require('node:fs');
 
 const commands = [];

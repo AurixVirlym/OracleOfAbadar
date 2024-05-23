@@ -41,6 +41,7 @@ module.exports = {
 
 		if (QueryReportInfo !== null) {
 			const GMsOnList = [];
+			const FreeAssigneeOnList = [];
 			let FirstGMName;
 
 			if (QueryReportInfo.SSR === false) {
@@ -58,6 +59,16 @@ module.exports = {
 					if (QueryGMData != null) {
 						const GMName = QueryGMData.DiscordId;
 						GMsOnList.push(GMName);
+					}
+
+				}
+
+				for (const iterator of QueryReportInfo.FreeAssign) {
+					QueryGMData = await PlayerData.findOne({ _id: iterator });
+
+					if (QueryGMData != null) {
+						const GMName = QueryGMData.DiscordId;
+						FreeAssigneeOnList.push(GMName);
 					}
 
 				}
@@ -102,6 +113,10 @@ module.exports = {
 						.setCustomId('gmlist')
 						.setLabel('GM List')
 						.setStyle(ButtonStyle.Primary),
+					new ButtonBuilder()
+						.setCustomId('freelist')
+						.setLabel('Free Assignee List List')
+						.setStyle(ButtonStyle.Primary),
 				);
 
 			const embed = new EmbedBuilder()
@@ -121,7 +136,7 @@ module.exports = {
 			let currentIndex = 0;
 			collector.on('collect', async interaction => {
 
-               let CharInReportID, CharInReportDisplay, GMsInReportID, GMsInReportDisplay
+               let CharInReportID, CharInReportDisplay, GMsInReportID, GMsInReportDisplay, FreeAssigneeInReportID, FreeAssigneesInReportDisplay
 
 				if (interaction.customId === 'reportdesc') {
 					await interaction.update({ embeds: [embed], components: [rowdesc] });
@@ -145,11 +160,19 @@ module.exports = {
 						currentPage = 'gmlist';
 					}
 
+					if (interaction.customId === 'freelist') {
+						currentIndex = 0;
+						currentPage = 'freelist';
+					}
+
 					CharInReportID = QueryReportInfo.Characters.slice(currentIndex, currentIndex + 10);
 					CharInReportDisplay = 'Characters: ';
 
 					GMsInReportID = GMsOnList.slice(currentIndex, currentIndex + 10);
 					GMsInReportDisplay = 'GMs: ';
+
+					FreeAssigneeInReportID = FreeAssigneeOnList.slice(currentIndex, currentIndex + 10);
+					FreeAssigneesInReportDisplay = 'Free Assignee: ';
 
 					if (currentPage == 'charlist') {
 						DescReportDisplay = 'Characters: ';
@@ -166,6 +189,13 @@ module.exports = {
 					if (currentPage == 'gmlist') {
 						DescReportDisplay = 'GMs: ';
 						for (const element of GMsInReportID) {
+							DescReportDisplay += '\n ' + String(element);
+						}
+					}
+
+					if (currentPage == 'freelist') {
+						DescReportDisplay = 'Free Assignees: ';
+						for (const element of FreeAssigneeInReportID) {
 							DescReportDisplay += '\n ' + String(element);
 						}
 					}
