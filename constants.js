@@ -8,7 +8,7 @@ const { bold, italic, strikethrough, underscore, spoiler, quote, blockQuote } = 
 
 
 
-const GoldAtLevel = [0, 20, 40, 80, 140, 260, 460, 749, 1140, 1640, 2340];
+const GoldAtLevel = [0, 20, 40, 80, 140, 260, 460, 740, 1140, 1640, 2340];
 const GoldPerXP = [0, 5, 10, 15, 30, 50, 70, 100, 125, 175, 225];
 
 const ConsumableBudgetAtLevel = [
@@ -88,6 +88,7 @@ const ReportSchema = new mongoose.Schema({
 	FreeAssign: Array, // 
 	Characters: Array, // id.
 	SSR: Boolean,
+	Image: String,
 	Published: { type: Boolean, required: true }, // to determine if the Report should in players hands.
 }, { collection: 'Reports' });
 
@@ -1048,6 +1049,21 @@ async function PullCard(interaction,QueryPlayerInfo,SetsToPull,PullType,RPcost,R
 
 
 const NumberOfUniqueCards = 255
+
+function isValidHttpUrl(string) {
+			let url;
+
+			if (string === null)
+				{return false}
+			
+			try {
+				url = new URL(string);
+			} catch (_) {
+				return false;  
+			}
+
+			return true;
+			}
 		
 
 
@@ -1088,4 +1104,5 @@ module.exports = {
 	PullCard,
 	XPneededForNextSlot,
 	FreeAssigneeAddToReport,
+	isValidHttpUrl,
 };

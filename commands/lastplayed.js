@@ -39,10 +39,10 @@ module.exports = {
 		let DaysAgoRequested = interaction.options.getNumber('days');
 		let SortMethod = interaction.options.getString('sort');
 
-		if (DaysAgoRequested > 100){
+		if (DaysAgoRequested > 999){
 		if (interaction.member.roles.cache.some(r => [RoleBotAdmin].includes(r.name))) {}
 		else {
-			await interaction.editReply({ content: 'Only a oracle admin can view days beyond a 100.' });
+			await interaction.editReply({ content: 'Only a oracle admin can view days beyond a 999.' });
 			return;
 		}
 		}
@@ -60,7 +60,9 @@ module.exports = {
 	    CurrentDate = new Date();
 		let CharactersIDsofLastMonth = [];
 		let GMsIDsOfDate = [];
+		let FreeAssignIDsOfDate = [];
 		let PlayersPlayed = [];
+		let CharacterIDs = [];
 		let NumberOfReports = 0;
 
 		await ReportData.find({
@@ -75,6 +77,7 @@ module.exports = {
 					NumberOfReports += 1;
 					CharactersIDsofLastMonth = CharactersIDsofLastMonth.concat(ReportData.Characters);
 					GMsIDsOfDate = GMsIDsOfDate.concat(ReportData.GMs);
+					FreeAssignIDsOfDate = FreeAssignIDsOfDate.concat(ReportData.FreeAssign);
 				}
 
 
@@ -85,6 +88,8 @@ module.exports = {
 
 		const GMsCounted = {};
 
+		const FreeAssignCounted ={};
+
 		const countFuncPlayers = keys => {
 			CharactersCounted[keys] = ++CharactersCounted[keys] || 1;
 		};
@@ -93,43 +98,98 @@ module.exports = {
 			GMsCounted[keys] = ++GMsCounted[keys] || 1;
 		};
 
+		const countFreeAssign= keys => {
+			FreeAssignCounted[keys] = ++FreeAssignCounted[keys] || 1;
+		};
+
 		CharactersIDsofLastMonth.forEach(countFuncPlayers);
 		GMsIDsOfDate.forEach(countFuncGMs);
+		FreeAssignIDsOfDate.forEach(countFreeAssign);
 		
 		NumberOfPlayersPlayed = 0
 
 
 		for (const Element of Object.keys(CharactersCounted)) {
-			QueryCharInfo = await CharacterData.findOne({ _id: Element });
+			//QueryCharInfo = await CharacterData.findOne({ _id: Element });
 
-			IsPlayerOnList = PlayersPlayed.findIndex(item => item.name === QueryCharInfo.BelongsTo);
+			IsPlayerOnList = PlayersPlayed.findIndex(item => item.name === Element);
 
 			if (IsPlayerOnList === -1) {
 
-				PlayersPlayed.push({ name: QueryCharInfo.BelongsTo, quantity: CharactersCounted[Element], GamesRan: 0 });
+				CharacterIDs.push({ name: Element, quantity: CharactersCounted[Element], GamesRan: 0 });
+			}
+			else {
+
+				CharacterIDs[IsPlayerOnList].quantity += CharactersCounted[Element];
+			}
+
+		}
+
+		for (const Element of Object.keys(FreeAssignCounted)) {
+			//QueryGMInfo = await PlayerData.findOne({ _id: Element });
+
+			IsPlayerOnList = PlayersPlayed.findIndex(item => item.name === Element);
+
+			if (IsPlayerOnList === -1) {
+
+				PlayersPlayed.push({ name: Element, quantity: FreeAssignCounted[Element], GamesRan: 0 });
 				NumberOfPlayersPlayed += 1
 			}
 			else {
 
-				PlayersPlayed[IsPlayerOnList].quantity += CharactersCounted[Element];
+				PlayersPlayed[IsPlayerOnList].quantity += FreeAssignCounted[Element];
 			}
 
 		}
 
 		for (const Element of Object.keys(GMsCounted)) {
 
-			QueryGMInfo = await PlayerData.findOne({ _id: Element });
+			//QueryGMInfo = await PlayerData.findOne({ _id: Element });
 
-			IsPlayerOnList = PlayersPlayed.findIndex(item => item.name === QueryGMInfo.DiscordId);
+			IsPlayerOnList = PlayersPlayed.findIndex(item => item.name === Element);
 
 
 			if (IsPlayerOnList === -1) {
 
-				PlayersPlayed.push({ name: QueryGMInfo.DiscordId, quantity: 0, GamesRan: GMsCounted[Element] });
+				PlayersPlayed.push({ name: Element, quantity: 0, GamesRan: GMsCounted[Element] });
 			}
 			else {
 
 				PlayersPlayed[IsPlayerOnList].GamesRan += GMsCounted[Element];
+			}
+		}
+
+		for (const Element of PlayersPlayed) {
+
+			QueryGMInfo = await PlayerData.findOne({ _id: Element.name });
+
+			if (QueryGMInfo === null){
+				continue;
+			}
+
+			Element.name = QueryGMInfo.DiscordId;
+
+		}
+
+		for (const Element of CharacterIDs) {
+
+			QueryCharInfo = await CharacterData.findOne({ _id: Element.name });
+
+			if (QueryCharInfo === null){
+				continue;
+			}
+
+			Element.name = QueryCharInfo.BelongsTo;
+
+			IsPlayerOnList = PlayersPlayed.findIndex(item => item.name === QueryCharInfo.BelongsTo);
+
+			if (IsPlayerOnList === -1) {
+
+				PlayersPlayed.push(Element);
+				NumberOfPlayersPlayed += 1
+			}
+			else {
+				PlayersPlayed[IsPlayerOnList].quantity += Element.quantity;
 			}
 		}
 

@@ -100,6 +100,7 @@ module.exports = {
 					let SpacedDate =  EuroDateFunc(QueryReportInfo.RunDate)
 					let SpacedReport = QueryReportInfo.Name
 					let SpacedXP = String(QueryReportInfo.XP)
+					let PushString;
 
 					if (RemoveSpacesForMobile == false){
 						while (SpacedXP.length < 4) {
@@ -115,7 +116,11 @@ module.exports = {
 						}
 					}
 
-					AssignedReportInfo.push('\n`' + SpacedDate + ' - ' + SpacedReport+ ' - XP: ' + SpacedXP +"`");
+					if (QueryReportInfo.XP !== 250){
+						PushString = '\n`' + SpacedDate + ' - ' + SpacedReport+ ' - XP: ' + SpacedXP +"`"
+					} else PushString = '\n`' + SpacedDate + ' - ' + SpacedReport+"`"
+
+					AssignedReportInfo.push(PushString);
 
 
 				}
@@ -284,11 +289,23 @@ module.exports = {
 
 
 			}
+			
+			function isValidHttpUrl(string) {
+			let url;
+			
+			try {
+				url = new URL(string);
+			} catch (_) {
+				return false;  
+			}
+
+			return true;
+			}
 
 			var URLimage = 'https://cdn.discordapp.com/attachments/1006650762035728424/1055186205752434791/Oracle.webp';
-			if (await isImageURL(QueryCharacterInfo.CardImage)) {
+			if (await isValidHttpUrl(QueryCharacterInfo.CardImage)) {
 				var URLimage = QueryCharacterInfo.CardImage;
-			}
+			} else {console.log("Failed to Load: " + QueryCharacterInfo.CardImage)}
 
 
 			// char info embed
@@ -615,14 +632,14 @@ module.exports = {
 					rowcharacterselect1.addComponents(
 						new ButtonBuilder()
 							.setCustomId(String(index))
-							.setLabel(String(index) + ". " + Character.Name)
+							.setLabel(String(index+1) + ". " + Character.Name)
 							.setStyle(ButtonStyle.Primary))
 				} else {
 
 				 rowcharacterselect2.addComponents(
 					new ButtonBuilder()
 						.setCustomId(String(index))
-						.setLabel(String(index) + ". " + Character.Name)
+						.setLabel(String(index+1) + ". " + Character.Name)
 						.setStyle(ButtonStyle.Primary))
 					}
 

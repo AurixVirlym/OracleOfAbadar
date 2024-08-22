@@ -191,7 +191,7 @@ module.exports = {
 									let SpacedReportName = String(QueryReportInfo.Name)
 									
 									if (RemoveSpacesForMobile == false){
-									while (SpacedReportName.length < 60) {
+									while (SpacedReportName.length < 56) {
 										SpacedReportName += '\xa0'
 									}
 								}

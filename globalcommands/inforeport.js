@@ -7,6 +7,7 @@ const {
 	PlayerData,
 	ReportData,
 	FixStringForSearch,
+	isValidHttpUrl,
 } = require('../constants.js');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { bold } = require('discord.js');
@@ -34,7 +35,7 @@ module.exports = {
 
 
 		ReportName = ReportName.replace(/[\\@#&!`*_~<>|]/g, '');
-
+		var iconURL = "https://cdn.discordapp.com/attachments/1006650762035728424/1055186205752434791/Oracle.webp"
 		
 
 		const QueryReportInfo = await ReportData.findOne({ Name: { "$regex": FixStringForSearch(ReportName), "$options": "i" } });
@@ -42,7 +43,8 @@ module.exports = {
 		if (QueryReportInfo !== null) {
 			const GMsOnList = [];
 			const FreeAssigneeOnList = [];
-			let FirstGMName;
+			let FirstGMName; 
+			let FirstGMAvatar;
 
 			if (QueryReportInfo.SSR === false) {
 				QueryGMData = await PlayerData.findOne({ _id: QueryReportInfo.GMs[0] });
@@ -51,6 +53,7 @@ module.exports = {
 					const GMid = QueryGMData.DiscordId.replace(/[\\@#&!`*_~<>|]/g, '');
 					const FirstGM = await client.users.fetch(GMid);
 					FirstGMName = FirstGM.username;
+					FirstGMAvatar = FirstGM.avatarURL();
 				}
 
 				for (const iterator of QueryReportInfo.GMs) {
@@ -78,6 +81,7 @@ module.exports = {
 
 			if (typeof FirstGMName != undefined && FirstGMName != null) {
 				SRtitle = QueryReportInfo.Name + ' - Ran by ' + FirstGMName;
+				iconURL = FirstGMAvatar;
 			}
 			else if (QueryReportInfo.SSR === true) {
 				SRtitle = QueryReportInfo.Name + ' - Special Session Report.';
@@ -115,7 +119,7 @@ module.exports = {
 						.setStyle(ButtonStyle.Primary),
 					new ButtonBuilder()
 						.setCustomId('freelist')
-						.setLabel('Free Assignee List List')
+						.setLabel('Free Assignee List')
 						.setStyle(ButtonStyle.Primary),
 				);
 
@@ -124,7 +128,13 @@ module.exports = {
 				.setTitle(SRtitle)
 				.setDescription(QueryReportInfo.Description)
 				.setTimestamp()
-				.setFooter({ text: 'Absalom Living Campaign' });
+				.setFooter({ text: 'Absalom Living Campaign' ,iconURL: iconURL });
+
+
+			
+			if (await isValidHttpUrl(QueryReportInfo.Image)) {
+				embed.setImage(QueryReportInfo.Image)
+			} 
 
 			let embedMessage = await interaction.editReply({ embeds: [embed], components: [rowdesc] });
 			let currentPage = 'reportdesc';
@@ -201,14 +211,20 @@ module.exports = {
 					}
 
 					// Respond to interaction by updating message with new embed
+
+				var updateembed = new EmbedBuilder()
+				.setColor(ReportEmbedColor)
+				.setTitle(SRtitle)
+				.setDescription(DescReportDisplay)
+				.setTimestamp()
+				.setFooter({ text: 'Absalom Living Campaign',iconURL: iconURL });
+
+					if (await isValidHttpUrl(QueryReportInfo.Image)) {
+						embed.setImage(QueryReportInfo.Image)
+						} 
+
 					await interaction.update({
-						embeds: [new EmbedBuilder()
-							.setColor(ReportEmbedColor)
-							.setTitle(SRtitle)
-							.setDescription(DescReportDisplay)
-							.setTimestamp()
-							.setFooter({ text: 'Absalom Living Campaign' }),
-						],
+						embeds: [updateembed],
 
 						components: [rowlist],
 					});
